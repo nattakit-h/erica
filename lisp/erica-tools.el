@@ -17,9 +17,18 @@
 
 
 
+(setq project-vc-merge-submodules nil)
 (setq dired-listing-switches "-laGh1v --group-directories-first")
 
 
+
+(add-hook 'compilation-finish-functions
+  (lambda (buf str)
+    (when (null (string-match ".*exited abnormally.*" str))
+      ;;(bury-buffer (get-buffer-create "*compilation*"))
+      ;;(switch-to-prev-buffer (get-buffer-window (get-buffer-create "*compilation*")) t)
+      (delete-windows-on (get-buffer-create "*compilation*"))
+      )))
 
 (defun erica-eshell-clear ()
   (interactive "" '(eshell-mode))

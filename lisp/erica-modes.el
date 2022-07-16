@@ -70,11 +70,13 @@
 (add-to-list 'auto-mode-alist '("\\.mkiv\\'" . ConTeXt-mode))
 (setq ConTeXt-Mark-version "IV")
 (setq TeX-source-correlate-start-server t)
+(setq font-latex-fontify-sectioning 'color)
 (setq TeX-view-program-selection '((output-pdf "PDF Tools")))
 (with-eval-after-load "context"
   (setq TeX-file-extensions (cons "mkiv" TeX-file-extensions)))
 (add-hook 'ConTeXt-mode-hook (lambda () (local-unset-key "\"") (setq TeX-command-default "ConTeXt Full")))
 (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer)
+
 
 
 
