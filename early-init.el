@@ -36,6 +36,8 @@
 (setq transient-history-file (expand-file-name "transient/history.el" erica-data-directory))
 (setq transient-levels-file (expand-file-name "transient/levels.el" erica-data-directory))
 (setq transient-values-file (expand-file-name "transient/values.el" erica-data-directory))
+(setq url-configuration-directory (expand-file-name "url" erica-data-directory))
+(setq eshell-directory-name (expand-file-name "eshell" erica-data-directory))
 
 ;; Appearance
 
