@@ -73,6 +73,7 @@
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'suspend-frame 'disabled t)
 (put 'suspend-emacs 'disabled t)
+(put 'narrow-to-region 'disabled nil)
 
 ;; System
 
