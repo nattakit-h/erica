@@ -46,12 +46,14 @@
 (add-hook 'before-save-hook #'erica-ignore-save-scratch)
 (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 
+(c-add-style "cc" '("bsd" (c-basic-offset . 4) (c-offsets-alist . ((innamespace . [0])))))
 (c-add-style "c" '("bsd" (c-basic-offset . 4)))
-(setq c-default-style '((java-mode . "java") (awk-mode . "awk") (other . "c")))
+(setq c-default-style '((java-mode . "java") (awk-mode . "awk") (c++-mode . "cc") (other . "c")))
 (setq js-indent-level 2)
 (setq css-indent-offset 2)
 
 (keymap-global-set "<f5>" #'recompile)
+(keymap-global-set "<f6>" #'clang-format)
 
 
 
