@@ -17,13 +17,11 @@
 
 
 
-(set-fontset-font "fontset-default" 'ascii (font-spec :name "monospace"))
-(dolist (charset '(kana han cjk-misc)) (set-fontset-font "fontset-default" charset (font-spec :name "IBM Plex Sans JP" :weight 'medium)))
-(set-fontset-font "fontset-default" 'thai (font-spec :name "IBM Plex Sans Thai Looped"))
+(set-fontset-font "fontset-default" 'ascii (font-spec :name "Iberis Mono"))
+(dolist (charset '(kana han cjk-misc)) (set-fontset-font "fontset-default" charset (font-spec :name "IBM Plex Sans JP")))
+(set-fontset-font "fontset-default" 'thai (font-spec :name "IBM Plex Sans Thai Looped"  :weight 'medium))
 
-(set-face-attribute 'default nil :font "fontset-default" :weight 'medium)
-(set-face-attribute 'fixed-pitch nil :font "fontset-default" :weight 'medium)
-(set-face-attribute 'variable-pitch nil :font "Vollkorn")
+(set-face-attribute 'variable-pitch nil :font "Iberis Sans")
 
 
 
@@ -75,29 +73,6 @@
 
 
 (straight-use-package 'simple-modeline)
-
-(defun erica-window-buttom-right-p ()
-  (let* ((window (window-at (frame-width) (- (frame-height) 1)))
-         (offsetp (minibufferp (window-buffer window)))
-         (target (if offsetp (window-at (frame-width) (- (frame-height) (window-height window))) window)))
-    (equal target (selected-window))))
-
-(defun erica-modeline-segment-time ()
-  (when (erica-window-buttom-right-p)
-    (simple-modeline-segment-misc-info)))
-
-(setq simple-modeline-segments
-      '((simple-modeline-segment-modified
-         simple-modeline-segment-buffer-name
-         simple-modeline-segment-position)
-        (simple-modeline-segment-minor-modes
-         simple-modeline-segment-input-method
-         simple-modeline-segment-eol
-         simple-modeline-segment-encoding
-         simple-modeline-segment-vc
-         simple-modeline-segment-process
-         simple-modeline-segment-major-mode
-         erica-modeline-segment-time)))
 (simple-modeline-mode 1)
 
 
@@ -119,14 +94,15 @@
 (straight-use-package '(ligature :type git :host github :repo "mickeynp/ligature.el"))
 (ligature-set-ligatures
  't
- '("-<<" "-<" "-<-" "<--" "<---" "<<-" "<-"
-   "->" "->>" "-->" "--->" "->-" ">-" ">>-"
-   "=<<" "=<" "=<=" "<==" "<===" "<<=" "<="
-   "=>" "=>>" "==>" "===>" "=>=" ">=" ">>="
-   "<~~" "<~" "~>" "~~>" "::" ":::" "<=>"
-   ":=" ":-" ":+" "<|" "<|>" "|>"
-   "-:" "=:" ":>" "<!--" "<!---"))
+ '("<--" "<---" "<<-" "<-" "->" "->>" "-->" "--->" "<->" "<-->" "<--->" "<---->" "<!--"
+   "<==" "<===" "<<=" "<=" "=>" "=>>" "==>" "===>" ">=" ">>=" "<=>" "<==>" "<===>" "<====>" "<!---"
+   "<~~" "<~" "~>" "~~>" "::" ":::" "<>" ":>"
+   ":=" ":-" ":+" "<|" "<|>" "|>" ))
 (global-ligature-mode 1)
+
+
+(keymap-global-set "<f12>" #'restart-emacs)
+
 
 
 

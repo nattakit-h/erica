@@ -35,13 +35,7 @@
 
 
 
-(straight-use-package 'embark)
-(keymap-global-set "C-." #'embark-act)
-
-
-
 (progn
- (recentf-mode 1)
  (straight-use-package 'consult)
  (keymap-global-set "C-x b" #'consult-buffer)
  (keymap-global-set "C-x 4 b" #'consult-buffer-other-window)
@@ -53,24 +47,15 @@
 
 
 
-(progn
-  (straight-use-package 'embark-consult)
-  (add-hook 'embark-collect-mode #'consult-preview-at-point-mode))
-
-
-;; (straight-use-package 'corfu)
-;; (setq corfu-auto t)
-;; (setq corfu-quit-at-boundary t)
-;; (setq corfu-quit-no-match t)
-;; (corfu-global-mode 1)
-
+(straight-use-package 'corfu)
+(setq corfu-auto t)
+(setq corfu-quit-at-boundary t)
+(setq corfu-quit-no-match t)
+(global-corfu-mode 1)
 
 
 (straight-use-package 'orderless)
 (setq completion-styles '(orderless))
-
-(straight-use-package 'company)
-(global-company-mode 1)
 
 
 

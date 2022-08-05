@@ -22,13 +22,16 @@
 
 
 
+(keymap-global-set "<f5>" #'recompile)
+(setq compilation-scroll-output 'first-error)
+(defvar erica-compilation-auto-delete nil)
 (add-hook 'compilation-finish-functions
   (lambda (buf str)
-    (when (null (string-match ".*exited abnormally.*" str))
-      ;;(bury-buffer (get-buffer-create "*compilation*"))
-      ;;(switch-to-prev-buffer (get-buffer-window (get-buffer-create "*compilation*")) t)
-      (delete-windows-on (get-buffer-create "*compilation*"))
-      )))
+    (when (and erica-compilation-auto-delete
+               (null (string-match ".*exited abnormally.*" str)))
+      (delete-windows-on (get-buffer-create "*compilation*")))))
+
+
 
 (defun erica-eshell-clear ()
   (interactive "" '(eshell-mode))
@@ -65,25 +68,23 @@
 
 
 
-(straight-use-package 'nov)
-(setq nov-text-width 120)
-(setq nov-save-place-file (expand-file-name "nov-places" erica-data-directory))
-(add-to-list 'display-buffer-alist
-             '("^\\*outline"
-               display-buffer-in-side-window
-               (side . left)
-               (window-width . 0.35)
-               (inhibit-switch-frame . t)))
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-(defun erica-setup-nov-mode ()
-  (setq-local fill-column 140)
-  (setq-local cursor-type nil)
-  (visual-line-mode 1)
-  (visual-fill-column-mode 1)
-  (face-remap-add-relative 'variable-pitch
-                           :family "Crimson"
-                           :height 2.0))
-(add-hook 'nov-mode-hook #'erica-setup-nov-mode)
+(progn
+  (straight-use-package 'nov)
+  (setq nov-text-width 120)
+  (setq nov-save-place-file (expand-file-name "nov-places" erica-data-directory))
+  (add-to-list 'display-buffer-alist
+               '("^\\*outline"
+                 display-buffer-in-side-window
+                 (side . left)
+                 (window-width . 0.35)
+                 (inhibit-switch-frame . t)))
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+  (defun erica-setup-nov-mode ()
+    (setq-local fill-column 140)
+    (setq-local cursor-type nil)
+    (visual-line-mode 1)
+    (visual-fill-column-mode 1))
+  (add-hook 'nov-mode-hook #'erica-setup-nov-mode))
 
 
 

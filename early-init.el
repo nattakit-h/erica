@@ -47,8 +47,14 @@
 (setq modus-themes-bold-constructs t)
 (setq modus-themes-mode-line '(borderless))
 (setq modus-themes-region '(no-extend bg-only accented))
+(setq modus-themes-links '(no-underline))
+(setq modus-themes-lang-checkers '(background))
+(setq flymake-fringe-indicator-position nil)
+(setq modus-themes-mixed-fonts t)
+
 
 (load-theme 'modus-operandi t)
+(set-face-attribute 'tooltip nil :background (modus-themes-color 'bg-main))
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)

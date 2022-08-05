@@ -26,5 +26,3 @@
 (require 'erica-binding)
 (require 'erica-era)
 
-(put 'set-goal-column 'disabled nil)
-(put 'narrow-to-region 'disabled nil)

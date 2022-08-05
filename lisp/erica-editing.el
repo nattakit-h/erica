@@ -52,9 +52,6 @@
 (setq js-indent-level 2)
 (setq css-indent-offset 2)
 
-(keymap-global-set "<f5>" #'recompile)
-(keymap-global-set "<f6>" #'clang-format)
-
 
 
 (progn
@@ -62,12 +59,7 @@
   (require 'ispell)
 
   (with-eval-after-load 'flyspell
-    (define-key flyspell-mode-map (kbd "C-;") #'flyspell-popup-correct))
-
-  (let ((ispell-program-name (executable-find "aspell")))
-    (when ispell-program-name
-      ;(add-hook 'prog-mode-hook #'flyspell-prog-mode)
-      )))
+    (define-key flyspell-mode-map (kbd "C-;") #'flyspell-popup-correct)))
 
 
 

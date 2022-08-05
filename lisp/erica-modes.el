@@ -29,6 +29,14 @@
 
 
 
+(straight-use-package 'scribble-mode)
+
+
+
+(straight-use-package 'yaml-mode)
+
+
+
 (straight-use-package 'racket-mode)
 (add-hook 'racket-before-run-hook #'racket-repl-clear)
 
@@ -36,12 +44,16 @@
 
 (progn
   (straight-use-package 'geiser)
+  (setq geiser-repl-history-filename (expand-file-name "geiser-history" erica-data-directory))
+  (add-to-list 'auto-mode-alist '("\\.sls\\'" . scheme-mode))
+
+  (straight-use-package 'geiser-guile)
+
   (straight-use-package 'geiser-chez)
+  (setq geiser-chez-binary "chezscheme")
+
   (straight-use-package 'geiser-chicken)
   (setq geiser-chicken-binary "csi")
-  (setq geiser-chez-binary "chezscheme")
-  (straight-use-package 'geiser-guile)
-  (add-to-list 'auto-mode-alist '("\\.sls\\'" . scheme-mode))
 
   (defun scheme-module-indent (state indent-point normal-indent) 0)
   (put 'module 'scheme-indent-function 'scheme-module-indent)
@@ -52,17 +64,25 @@
   (put 'when 'scheme-indent-function 1)
   (put 'unless 'scheme-indent-function 1)
   (put 'match 'scheme-indent-function 1)
-
+  (put 'let/drop 'scheme-indent-function 1)
+  (put 'let/drop-guard 'scheme-indent-function 1)
+  (put 'with-memory-pointerof 'scheme-indent-function 1)
   (put 'syntax-table-set! 'scheme-indent-function 1)
   (put 'sharp-syntax-table-set! 'scheme-indent-function 1))
 
 
-(straight-use-package 'eglot)
-(setq eglot-send-changes-idle-time 0.5)
-(setq eglot-events-buffer-size nil)
-;; (dolist (server '(("csharp-mode" . ("/usr/bin/omnisharp" "-lsp"))))
-;;   (add-to-list 'eglot-server-programs (cons (make-symbol (car server)) (cdr server)))
-;;   (add-hook (make-symbol (concat (car server) "-hook")) #'eglot-ensure))
+
+(progn
+ (straight-use-package 'eglot)
+ (setq eglot-send-changes-idle-time 0.25)
+ (setq eglot-autoshutdown t)
+ (with-eval-after-load 'eglot
+   (add-to-list 'eglot-server-programs '((c-mode c++-mode) . ("clangd")))
+   (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
+   (add-hook 'before-save-hook
+             (lambda ()
+               (when (eglot-managed-p)
+                 (call-interactively #'eglot-format-buffer))))))
 
 
 
