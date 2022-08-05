@@ -72,8 +72,39 @@
 
 
 
-(straight-use-package 'simple-modeline)
-(simple-modeline-mode 1)
+(progn
+  (straight-use-package '(awesome :type git :host github :repo "manateelazycat/awesome-tray"))
+
+  (defun erica-awesome-tray-module-input-method-info ()
+    (format
+     "%s"
+     (cond
+      ((not current-input-method) "EN")
+      ((string-match "thai" current-input-method) "TH")
+      ((string-match "mozc" current-input-method) "JP")
+      ((string= current-input-method "erica") "EC")
+      (t "**"))))
+
+  (setq awesome-tray-update-interval 0.1)
+  (setq awesome-tray-date-format "%y-%m-%d %R")
+  (setq awesome-tray-location-format "%l:%c")
+  (setq awesome-tray-mode-line-active-color "#444444")
+  (setq awesome-tray-active-modules
+        '("location"
+          "buffer-read-only"
+          "buffer-name"
+          "flymake"
+          "mode-name"
+          "input-method*"))
+  (setq awesome-tray-essential-modules '("buffer-name"))
+  (setq mode-line-format '(mode-line-end-spaces))
+
+  (awesome-tray-mode 1)
+  (with-eval-after-load 'awesome-tray
+    (add-to-list 'awesome-tray-module-alist
+                 '("input-method*" . (erica-awesome-tray-module-input-method-info
+                                      awesome-tray-module-input-method-face)))))
+
 
 
 
@@ -101,8 +132,14 @@
 (global-ligature-mode 1)
 
 
-(keymap-global-set "<f12>" #'restart-emacs)
 
+(straight-use-package 'helpful)
+(keymap-global-set "C-h f" #'helpful-callable)
+(keymap-global-set "C-h F" #'helpful-callable)
+(keymap-global-set "C-h v" #'helpful-variable)
+(keymap-global-set "C-h k" #'helpful-key)
+
+(keymap-global-set "C-c C-d" #'helpful-at-point)
 
 
 

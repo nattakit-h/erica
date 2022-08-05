@@ -126,6 +126,21 @@
 
  ("\\\\" ?\\))
 
-(setq-default default-input-method 'erica)
+(defvar erica-input-method-list '("erica" "thai-kesmanee"))
+
+(defun erica-cycle-input-method ()
+  (interactive)
+  (cond
+   ((or (not current-input-method)
+        (not (member current-input-method erica-input-method-list)))
+    (activate-input-method default-input-method))
+   ((equal (member current-input-method erica-input-method-list)
+           (last erica-input-method-list))
+    (activate-input-method (car erica-input-method-list)))
+   (t
+    (activate-input-method (cadr (member current-input-method erica-input-method-list))))))
+(setq-default default-input-method (car erica-input-method-list))
+(activate-input-method (car erica-input-method-list))
+(keymap-global-set "C-\\" #'erica-cycle-input-method)
 
 (provide 'erica-inputmethod)

@@ -24,6 +24,14 @@
 
 
 (windmove-default-keybindings 'meta)
+(keymap-global-set "C-t" nil)
+(keymap-global-set "C-t 0" #'tab-close)
+(keymap-global-set "C-t 1" #'tab-close-other)
+(keymap-global-set "C-t 2" #'tab-new)
+(keymap-global-set "C-t <left>" #'tab-previous)
+(keymap-global-set "C-t <right>" #'tab-next)
+(keymap-global-set "C-t RET" #'tab-switch)
+
 
 (advice-add 'split-window-below :after (lambda (&rest _) (call-interactively 'other-window)))
 (advice-add 'split-window-right :after (lambda (&rest _) (call-interactively 'other-window)))
