@@ -24,5 +24,4 @@
 (require 'erica-tools)
 (require 'erica-inputmethod)
 (require 'erica-binding)
-(require 'erica-era)
 
