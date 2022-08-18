@@ -69,6 +69,7 @@
 
 ;; Backup
 
+(setq auto-save-default nil)
 (setq create-lockfiles nil)
 (setq make-backup-files nil)
 

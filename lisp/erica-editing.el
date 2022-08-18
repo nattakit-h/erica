@@ -52,24 +52,23 @@
 (setq js-indent-level 2)
 (setq css-indent-offset 2)
 
+(use-package hungry-delete
+  :custom
+  (hungry-delete-chars-to-skip " \t")
+  :config
+  (global-hungry-delete-mode 1))
+
+(use-package visual-regexp
+  :config
+  (defalias 'replace-regexp #'vr/replace)
+  (defalias 'query-replace-regexp #'vr/query-replace))
 
 
-(straight-use-package 'hungry-delete)
-(setq hungry-delete-chars-to-skip " \t")
-(global-hungry-delete-mode 1)
-
-
-
-(straight-use-package 'visual-regexp)
-(defalias 'replace-regexp #'vr/replace)
-(defalias 'query-replace-regexp #'vr/query-replace)
-
-
-
-(straight-use-package 'yasnippet-snippets)
-(straight-use-package 'yasnippet)
-(add-hook 'c-mode-hook #'yas-minor-mode)
-(add-hook 'cmake-mode-hook #'yas-minor-mode)
+(use-package yasnippet-snippets)
+(use-package yasnippet
+  :after (yasnippet-snippets)
+  :hook
+  ((c-modfe cmake-mode) . yas-minor-mode))
 
 
 

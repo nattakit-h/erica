@@ -21,10 +21,12 @@
 (require 'subr-x)
 (require 'em-unix)
 (require 'em-dirs)
+(require 'em-banner)
+(require 'tramp)
 
 ;;; from aweshell.el
 
-(defun erica-shell-cat (&optional filename)
+(defun eshell/cat (&optional filename)
   (if filename
       (let ((existing-buffer (get-file-buffer filename))
             (buffer (find-file-noselect filename)))
@@ -42,9 +44,7 @@
         nil)
     (eshell-command-result "cat")))
 
-(defalias 'eshell/cat 'erica-shell-cat)
-
-(defun erica-shell-unpack (&optional file &rest args)
+(defun eshell/unpack (&optional file &rest args)
   (if file
       (let ((command (seq-some (lambda (x)
                                  (if (string-match-p (car x) file)
@@ -65,7 +65,14 @@
           (eshell-command-result unpack-command)))
     "unpack: missing file operand"))
 
-(defalias 'eshell/unpack 'erica-shell-unpack)
+(defun eshell/em (file)
+  (find-file file))
+
+(defun eshell/pls (&rest args)
+  (eshell-command-result (string-join (cons "sudo" args) " ")))
+
+(defun eshell/ll (&rest args)
+  (eshell-command-result (string-join (cons "ls -lhA" args) " ")))
 
 (defun erica-shell-prompt ()
   (concat
@@ -78,15 +85,6 @@
    (if (= (user-uid) 0)
        (propertize "# " 'face '(:foreground "#b21818"))
      (propertize "$ " 'face '(:foreground "#5d8451")))))
-
-(defun eshell/em (file)
-  (find-file file))
-
-(defun eshell/pls (&rest args)
-  (eshell-command-result (string-join (cons "sudo" args) " ")))
-
-(defun eshell/ll (&rest args)
-  (eshell-command-result (string-join (cons "ls -lhA" args) " ")))
 
 (defun erica-eshell-clear ()
   (interactive "" eshell-mode)
@@ -106,6 +104,7 @@
 
 (add-hook 'eshell-mode-hook #'erica-eshell-hook)
 
+(setq eshell-banner-message "")
 (setq eshell-prefer-lisp-functions t)
 (setq eshell-prefer-lisp-variables t)
 (setq eshell-prompt-function #'erica-shell-prompt)
