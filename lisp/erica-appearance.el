@@ -51,7 +51,6 @@
 
 
 (add-hook 'prog-mode-hook (lambda () (setq display-line-numbers t)))
-(add-hook 'compilation-filter-hook (lambda () (ansi-color-apply-on-region compilation-filter-start (point))))
 
 
 
@@ -60,21 +59,19 @@
 (setq uniquify-after-kill-buffer-p t)
 (setq uniquify-ignore-buffers-re "^\\*")
 
+
 
+(use-package marginalia
+  :config
+  (marginalia-mode 1))
 
-(straight-use-package 'marginalia)
-(marginalia-mode 1)
+(use-package page-break-lines
+  :config
+  (global-page-break-lines-mode 1))
 
-
-
-(straight-use-package 'page-break-lines)
-(global-page-break-lines-mode 1)
-
-
-
-(progn
-  (straight-use-package '(awesome :type git :host github :repo "manateelazycat/awesome-tray"))
-
+(use-package awesome-tray
+  :straight '(awesome-tray :type git :host github :repo "manateelazycat/awesome-tray")
+  :preface
   (defun erica-awesome-tray-module-input-method-info ()
     (format
      "%s"
@@ -85,61 +82,118 @@
       ((string= current-input-method "erica") "EC")
       (t "**"))))
 
-  (setq awesome-tray-update-interval 0.1)
-  (setq awesome-tray-date-format "%y-%m-%d %R")
-  (setq awesome-tray-location-format "%l:%c")
-  (setq awesome-tray-mode-line-active-color "#444444")
-  (setq awesome-tray-active-modules
+  (defun erica-awesome-tray-module-flymake-info ()
+    (with-demoted-errors ""
+      (if (and (featurep 'flymake) flymake--state)
+          (let* ((known (hash-table-keys flymake--state))
+                 (running (flymake-running-backends))
+                 (disabled (flymake-disabled-backends))
+                 (reported (flymake-reporting-backends))
+                 (disabledp (and disabled (null running)))
+                 (waiting (cl-set-difference running reported)))
+            (when-let
+                ((flymake-state
+                  (cond
+                   (waiting "∿")
+                   ((null known) "⁇")
+                   (disabledp "⍉")
+                   (t (let ((.error 0)
+                            (.warning 0)
+                            (.note 0))
+                        (cl-loop
+                         with warning-level = (warning-numeric-level :warning)
+                         with note-level = (warning-numeric-level :debug)
+                         for state being the hash-values of flymake--state
+                         do (cl-loop
+                             with diags = (flymake--state-diags state)
+                             for diag in diags do
+                             (let ((severity (flymake--lookup-type-property (flymake--diag-type diag) 'severity
+                                                                            (warning-numeric-level :error))))
+                               (cond ((> severity warning-level) (cl-incf .error))
+                                     ((> severity note-level)    (cl-incf .warning))
+                                     (t                          (cl-incf .note))))))
+                        (let ((num (+ .error .warning .note)))
+                          (if (> num 0)
+                              (string-clean-whitespace
+                               (string-join
+                                (list
+                                 (when (> .note 0)
+                                   (propertize (concat "•" (number-to-string .note)) 'face 'awesome-tray-module-flymake-note))
+                                 (when (> .warning 0)
+                                   (propertize (concat "•" (number-to-string .warning)) 'face 'awesome-tray-module-flymake-warning))
+                                 (when (> .error 0)
+                                   (propertize (concat "•" (number-to-string .error)) 'face 'awesome-tray-module-flymake-error)))
+                                " "))
+                            (propertize "•" 'face 'awesome-tray-module-file-path-face))))))))
+              flymake-state)))))
+  :custom
+  (awesome-tray-update-interval 0.1)
+  (awesome-tray-info-padding-right 1)
+  (awesome-tray-date-format "%y-%m-%d %R")
+  (awesome-tray-location-format "%l:%c")
+  (awesome-tray-mode-line-active-color "#444444")
+  (awesome-tray-active-modules
         '("location"
           "buffer-read-only"
           "buffer-name"
-          "flymake"
+          "flymake*"
           "mode-name"
           "input-method*"))
-  (setq awesome-tray-essential-modules '("buffer-name"))
-  (setq mode-line-format '(mode-line-end-spaces))
-
-  (awesome-tray-mode 1)
-  (with-eval-after-load 'awesome-tray
-    (add-to-list 'awesome-tray-module-alist
-                 '("input-method*" . (erica-awesome-tray-module-input-method-info
-                                      awesome-tray-module-input-method-face)))))
-
-
-
-
-(straight-use-package 'hl-todo)
-(setq hl-todo-highlight-punctuation ":")
-(setq hl-todo-keyword-faces
-      '(("NOTE" success bold)
-        ("INFO" success bold)
-        ("TODO" warning bold)
-        ("FIXME" error bold)
-        ("HACK" error bold)
-        ("BUG" error bold)
-        ("XXX" error bold)))
-(global-hl-todo-mode 1)
+  (awesome-tray-essential-modules '("buffer-name"))
+  (mode-line-format '(mode-line-end-spaces))
+  :config
+  (add-to-list 'awesome-tray-module-alist
+               '("input-method*" . (erica-awesome-tray-module-input-method-info
+                                    awesome-tray-module-input-method-face)))
+  (add-to-list 'awesome-tray-module-alist
+               '("flymake*" . (erica-awesome-tray-module-flymake-info nil)))
+  (awesome-tray-mode 1))
 
 
+(use-package hl-todo
+  :custom
+  (hl-todo-highlight-punctuation ":")
+  (hl-todo-keyword-faces
+   '(("NOTE" success bold)
+     ("INFO" success bold)
+     ("TODO" warning bold)
+     ("FIXME" error bold)
+     ("HACK" error bold)
+     ("BUG" error bold)
+     ("XXX" error bold)))
+  :config
+  (global-hl-todo-mode 1))
 
-(straight-use-package '(ligature :type git :host github :repo "mickeynp/ligature.el"))
-(ligature-set-ligatures
- 't
- '("<--" "<---" "<<-" "<-" "->" "->>" "-->" "--->" "<->" "<-->" "<--->" "<---->" "<!--"
-   "<==" "<===" "<<=" "<=" "=>" "=>>" "==>" "===>" ">=" ">>=" "<=>" "<==>" "<===>" "<====>" "<!---"
-   "<~~" "<~" "~>" "~~>" "::" ":::" "<>" ":>"
-   ":=" ":-" ":+" "<|" "<|>" "|>" ))
-(global-ligature-mode 1)
+(use-package ligature
+  :straight '(ligature :type git :host github :repo "mickeynp/ligature.el")
+  :config
+  (ligature-set-ligatures
+   't
+   '("<--" "<---" "<<-" "<-" "->" "->>" "-->" "--->" "<->" "<-->" "<--->" "<---->" "<!--"
+     "<==" "<===" "<<=" "<=" "=>" "=>>" "==>" "===>" ">=" ">>=" "<=>" "<==>" "<===>" "<====>" "<!---"
+     "<~~" "<~" "~>" "~~>" "::" ":::" "<>" ":>"
+     ":=" ":-" ":+" "<|" "<|>" "|>" ))
+  (global-ligature-mode 1))
+
+(use-package helpful
+  :commands (helpful-callable helpful-variable helpful-key helpful-at-point)
+  :bind
+  (("C-h f" . helpful-callable)
+   ("C-h F" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)
+   ("C-c C-d" . helpful-at-point)))
 
 
-
-(straight-use-package 'helpful)
-(keymap-global-set "C-h f" #'helpful-callable)
-(keymap-global-set "C-h F" #'helpful-callable)
-(keymap-global-set "C-h v" #'helpful-variable)
-(keymap-global-set "C-h k" #'helpful-key)
-
-(keymap-global-set "C-c C-d" #'helpful-at-point)
+(use-package fancy-compilation
+  :straight '(fancy-compilation
+              :type git
+              :host nil
+              :repo "https://codeberg.org/ideasman42/emacs-fancy-compilation.git")
+  :custom
+  (fancy-compilation-override-colors nil)
+  :config
+  (fancy-compilation-mode 1))
 
 
 

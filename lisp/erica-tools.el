@@ -17,74 +17,70 @@
 
 
 
-(setq project-vc-merge-submodules nil)
-(setq dired-listing-switches "-laGh1v --group-directories-first")
+(use-package project
+  :straight nil
+  :custom
+  (project-vc-merge-submodules nil))
 
+(use-package dired
+  :straight nil
+  :custom
+  (dired-listing-switches "-laGh1v --group-directories-first")
+  :config
+  (defalias 'dired-find-file 'dired-find-alternate-file)
+  (advice-add 'compile :after (lambda (&rest _) (call-interactively 'other-window)))
+  (advice-add 'recompile :after (lambda (&rest _) (call-interactively 'other-window))))
 
+(use-package compile
+  :straight nil
+  :commands (compile recompile)
+  :bind ("<f5>" . recompile)
+  :custom
+  (compile-command "make -Cbuild -j9 --no-print-directory")
+  :hook
+  (compilation-mode . (lambda () (setq-local truncate-lines nil))))
 
-(keymap-global-set "<f5>" #'recompile)
-(setq compilation-scroll-output 'first-error)
-(defvar erica-compilation-auto-delete nil)
-(add-hook 'compilation-finish-functions
-  (lambda (buf str)
-    (when (and erica-compilation-auto-delete
-               (null (string-match ".*exited abnormally.*" str)))
-      (delete-windows-on (get-buffer-create "*compilation*")))))
+(use-package visual-fill-column
+  :custom
+  (visual-fill-column-center-text t))
 
+(use-package rg
+  :bind ("C-x p g" . rg-project)
+  :config
+  (add-to-list 'rg-custom-type-aliases '("el" . "*.el"))
+  (add-to-list 'rg-custom-type-aliases '("ss" . "*.ss *.scm *.sls *.sld")))
 
+(use-package magit
+  :commands magit
+  :config
+  (magit-auto-revert-mode -1))
 
-(defun erica-eshell-clear ()
-  (interactive "" '(eshell-mode))
-  (end-of-buffer)
-  (eshell-kill-input)
-  (insert "clear 1")
-  (eshell-send-input)
-  (end-of-buffer)
-  (eshell-bol)
-  (yank))
+(use-package pdf-tools
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  (pdf-tools-install t))
 
-(defun erica-eshell-hook () (local-set-key (kbd "C-c M-o") #'erica-eshell-clear))
-(add-hook 'eshell-mode-hook #'erica-eshell-hook)
-
-
-
-(straight-use-package 'rg)
-(rg-enable-default-bindings)
-
-
-
-(straight-use-package 'visual-fill-column)
-(setq visual-fill-column-center-text t)
-
-
-
-(straight-use-package 'magit)
-(magit-auto-revert-mode -1)
-
-
-
-(straight-use-package 'pdf-tools)
-(pdf-tools-install)
-
-
-
-(progn
-  (straight-use-package 'nov)
-  (setq nov-text-width 120)
-  (setq nov-save-place-file (expand-file-name "nov-places" erica-data-directory))
+(use-package nov
+  :mode ("\\.epub\\'" . nov-mode)
+  :preface
+  (defun erica-setup-nov-mode ()
+    (setq-local fill-column 140)
+    (setq-local cursor-type nil)
+    (visual-line-mode 1)
+    (visual-fill-column-mode 1)
+    (face-remap-add-relative 'variable-pitch '(:family "IBM Plex Serif")))
+  :custom
+  (nov-text-width 120)
+  (nov-save-place-file (expand-file-name "nov-places" erica-data-directory))
+  :config
   (add-to-list 'display-buffer-alist
                '("^\\*outline"
                  display-buffer-in-side-window
                  (side . left)
                  (window-width . 0.35)
                  (inhibit-switch-frame . t)))
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  (defun erica-setup-nov-mode ()
-    (setq-local fill-column 140)
-    (setq-local cursor-type nil)
-    (visual-line-mode 1)
-    (visual-fill-column-mode 1))
-  (add-hook 'nov-mode-hook #'erica-setup-nov-mode))
+  :hook
+  (nov-mode . erica-setup-nov-mode))
 
 
 

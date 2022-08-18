@@ -34,24 +34,26 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+
 (require 'straight)
+(straight-use-package 'use-package)
 
+(use-package no-littering
+  :init
+  (setq no-littering-var-directory erica-data-directory)
+  (setq no-littering-etc-directory erica-config-directory)
+  (setq project-list-file (expand-file-name "projects.el" erica-data-directory))
+  (setq custom-file (expand-file-name "custom.el" erica-config-directory))
+  :config
+  (when (file-exists-p custom-file)
+    (load-file custom-file)))
 
+(use-package exec-path-from-shell
+  :custom
+  (path-from-shell-arguments (remove "-i" exec-path-from-shell-arguments))
+  :config
+  (exec-path-from-shell-initialize))
 
-(straight-use-package 'no-littering)
-(setq no-littering-var-directory erica-data-directory)
-(setq no-littering-etc-directory erica-config-directory)
-(setq project-list-file (expand-file-name "projects.el" no-littering-var-directory))
-(setq custom-file (expand-file-name "custom.el" no-littering-etc-directory))
-(when (file-exists-p custom-file)
-  (load-file custom-file))
-
-
-
-(straight-use-package 'exec-path-from-shell)
-(require 'exec-path-from-shell)
-(setq path-from-shell-arguments (remove "-i" exec-path-from-shell-arguments))
-(exec-path-from-shell-initialize)
 
 
 

@@ -16,46 +16,37 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-(defvar erica-excluded-commands '(proced))
 
-(defun erica-command-include-p (command buffer)
-  (let ((excludedp (memq command erica-excluded-commands)))
-    (unless excludedp
-      (command-completion-default-include-p command buffer))))
-
-(setq read-extended-command-predicate #'erica-command-include-p)
-
-
-
-(progn
-  (straight-use-package 'vertico)
+(use-package vertico
+  :init
   (vertico-mode 1)
-  (setq minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
+  :custom
+  (minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt))
+  :hook
+  (minibuffer-setup . cursor-intangible-mode))
 
 
+(use-package corfu
+  :custom
+  (corfu-auto t)
+  (corfu-quit-at-boundary t)
+  (corfu-quit-no-match t)
+  :config
+  (global-corfu-mode 1))
 
-(progn
- (straight-use-package 'consult)
- (keymap-global-set "C-x b" #'consult-buffer)
- (keymap-global-set "C-x 4 b" #'consult-buffer-other-window)
- (keymap-global-set "C-x 5 b" #'consult-buffer-other-frame)
- (keymap-global-set "C-x p b" #'consult-project-buffer)
- (add-hook 'completion-list-mode #'consult-preview-at-point-mode)
- (setq xref-show-xrefs-function #'consult-xref
-       xref-show-definitions-function #'consult-xref))
+;; (progn
+;;  (straight-use-package 'consult)
+;;  (keymap-global-set "C-x b" #'consult-buffer)
+;;  (keymap-global-set "C-x 4 b" #'consult-buffer-other-window)
+;;  (keymap-global-set "C-x 5 b" #'consult-buffer-other-frame)
+;;  (keymap-global-set "C-x p b" #'consult-project-buffer)
+;;  (add-hook 'completion-list-mode #'consult-preview-at-point-mode)
+;;  (setq xref-show-xrefs-function #'consult-xref
+;;        xref-show-definitions-function #'consult-xref))
 
-
-
-(straight-use-package 'corfu)
-(setq corfu-auto t)
-(setq corfu-quit-at-boundary t)
-(setq corfu-quit-no-match t)
-(global-corfu-mode 1)
-
-
-(straight-use-package 'orderless)
-(setq completion-styles '(orderless))
+(use-package orderless
+  :custom
+  (completion-styles '(orderless)))
 
 
 

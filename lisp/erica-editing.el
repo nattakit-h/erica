@@ -54,15 +54,6 @@
 
 
 
-(progn
-  (straight-use-package 'flyspell-popup)
-  (require 'ispell)
-
-  (with-eval-after-load 'flyspell
-    (define-key flyspell-mode-map (kbd "C-;") #'flyspell-popup-correct)))
-
-
-
 (straight-use-package 'hungry-delete)
 (setq hungry-delete-chars-to-skip " \t")
 (global-hungry-delete-mode 1)
@@ -75,8 +66,10 @@
 
 
 
-(straight-use-package 'clang-format)
-(setq clang-format-style "file")
+(straight-use-package 'yasnippet-snippets)
+(straight-use-package 'yasnippet)
+(add-hook 'c-mode-hook #'yas-minor-mode)
+(add-hook 'cmake-mode-hook #'yas-minor-mode)
 
 
 

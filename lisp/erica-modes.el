@@ -17,74 +17,53 @@
 
 
 
-(straight-use-package 'cmake-mode)
+(use-package glsl-mode)
 
+(use-package cmake-mode)
 
+(use-package csharp-mode)
 
-(straight-use-package 'csharp-mode)
+(use-package go-mode)
 
+(use-package scribble-mode)
 
+(use-package yaml-mode)
 
-(straight-use-package 'go-mode)
+(use-package racket-mode
+  :hook
+  (racket-before-run . racket-repl-clear))
 
-
-
-(straight-use-package 'scribble-mode)
-
-
-
-(straight-use-package 'yaml-mode)
-
-
-
-(straight-use-package 'racket-mode)
-(add-hook 'racket-before-run-hook #'racket-repl-clear)
-
-
-
-(progn
-  (straight-use-package 'geiser)
-  (setq geiser-repl-history-filename (expand-file-name "geiser-history" erica-data-directory))
-  (add-to-list 'auto-mode-alist '("\\.sls\\'" . scheme-mode))
-
-  (straight-use-package 'geiser-guile)
-
-  (straight-use-package 'geiser-chez)
-  (setq geiser-chez-binary "chezscheme")
-
-  (straight-use-package 'geiser-chicken)
-  (setq geiser-chicken-binary "csi")
-
+(use-package geiser
+  :mode ("\\.sls\\'" . scheme-mode)
+  :preface
   (defun scheme-module-indent (state indent-point normal-indent) 0)
+  :custom
+  (geiser-repl-history-filename (expand-file-name "geiser-history" erica-data-directory))
+  :config
   (put 'module 'scheme-indent-function 'scheme-module-indent)
-
   (put 'and-let* 'scheme-indent-function 1)
   (put 'parameterize 'scheme-indent-function 1)
   (put 'handle-exceptions 'scheme-indent-function 1)
   (put 'when 'scheme-indent-function 1)
   (put 'unless 'scheme-indent-function 1)
-  (put 'match 'scheme-indent-function 1)
-  (put 'let/drop 'scheme-indent-function 1)
-  (put 'let/drop-guard 'scheme-indent-function 1)
-  (put 'with-memory-pointerof 'scheme-indent-function 1)
-  (put 'syntax-table-set! 'scheme-indent-function 1)
-  (put 'sharp-syntax-table-set! 'scheme-indent-function 1))
+  (put 'match 'scheme-indent-function 1))
 
+(use-package geiser-chez
+  :after (geiser)
+  :custom
+  (geiser-chez-binary "chezscheme"))
 
-
-(progn
- (straight-use-package 'eglot)
- (setq eglot-send-changes-idle-time 0.25)
- (setq eglot-autoshutdown t)
- (with-eval-after-load 'eglot
-   (add-to-list 'eglot-server-programs '((c-mode c++-mode) . ("clangd")))
-   (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
-   (add-hook 'before-save-hook
-             (lambda ()
-               (when (eglot-managed-p)
-                 (call-interactively #'eglot-format-buffer))))))
-
-
+(use-package eglot
+  :bind ("<f8>" . eglot)
+  :custom
+  (eglot-send-changes-idle-time 0.25)
+  (eglot-autoshutdown t)
+  :config
+  (add-to-list 'eglot-server-programs '((c-mode c++-mode) . ("clangd")))
+  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
+  :hook
+  (before-save . (lambda () (when (and (fboundp 'eglot-managed-p) (eglot-managed-p))
+                              (call-interactively #'eglot-format-buffer)))))
 
 (straight-use-package 'auctex)
 (add-to-list 'auto-mode-alist '("\\.mkiv\\'" . ConTeXt-mode))

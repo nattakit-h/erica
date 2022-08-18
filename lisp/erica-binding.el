@@ -20,8 +20,6 @@
 (setq use-short-answers t)
 (setq help-window-select t)
 
-(defalias 'dired-find-file 'dired-find-alternate-file)
-
 
 (windmove-default-keybindings 'meta)
 (keymap-global-set "C-t" nil)
@@ -31,12 +29,19 @@
 (keymap-global-set "C-t <left>" #'tab-previous)
 (keymap-global-set "C-t <right>" #'tab-next)
 (keymap-global-set "C-t RET" #'tab-switch)
+(setq tab-bar-show 1)
+
+
+
+(keymap-global-set "C-s" #'isearch-forward-regexp)
+(keymap-global-set "C-r" #'isearch-backward-regexp)
+(keymap-global-set "C-M-s" #'isearch-forward)
+(keymap-global-set "C-M-r" #'isearch-backward)
+
 
 
 (advice-add 'split-window-below :after (lambda (&rest _) (call-interactively 'other-window)))
 (advice-add 'split-window-right :after (lambda (&rest _) (call-interactively 'other-window)))
-(advice-add 'compile :after (lambda (&rest _) (call-interactively 'other-window)))
-(advice-add 'recompile :after (lambda (&rest _) (call-interactively 'other-window)))
 
 
 

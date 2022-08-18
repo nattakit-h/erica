@@ -49,8 +49,8 @@
 (setq modus-themes-region '(no-extend bg-only accented))
 (setq modus-themes-links '(no-underline))
 (setq modus-themes-lang-checkers '(background))
-(setq flymake-fringe-indicator-position nil)
 (setq modus-themes-mixed-fonts t)
+(setq flymake-fringe-indicator-position nil)
 
 
 (load-theme 'modus-operandi t)
