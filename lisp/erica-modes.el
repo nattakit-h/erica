@@ -36,7 +36,7 @@
 (use-package geiser
   :mode ("\\.sls\\'" . scheme-mode)
   :preface
-  (defun scheme-module-indent (state indent-point normal-indent) 0)
+  (defun scheme-module-indent (_state _indent-point _normal-indent) 0)
   :custom
   (geiser-repl-history-filename (expand-file-name "geiser-history" erica-data-directory))
   :config

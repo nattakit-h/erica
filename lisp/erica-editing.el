@@ -42,7 +42,7 @@
               (pcase args
                 (`() '(t))
                 (`(,kill) `(,(not kill)))
-                (`(,kill window) `(,(not kill) ,window)))))
+                (`(,kill ,window) `(,(not kill) ,window)))))
 (add-hook 'before-save-hook #'erica-ignore-save-scratch)
 (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 

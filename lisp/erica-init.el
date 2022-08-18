@@ -34,9 +34,13 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
 (require 'straight)
+
+
 (straight-use-package 'use-package)
+(straight-use-package 'bind-key)
+(require 'bind-key)
+
 
 (use-package no-littering
   :init

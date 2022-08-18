@@ -40,7 +40,6 @@
 (defun erica-setup-whitespace-faces ()
   (let ((bg (modus-themes-color 'bg-main))
         (bg-whitespace (modus-themes-color 'bg-whitespace))
-        (fg-alt (modus-themes-color 'fg-alt))
         (fg-whitespace (modus-themes-color 'fg-whitespace)))
     (set-face-attribute 'whitespace-tab nil :background bg)
     (set-face-attribute 'whitespace-space nil :foreground bg :background bg)
@@ -146,7 +145,7 @@
                '("input-method*" . (erica-awesome-tray-module-input-method-info
                                     awesome-tray-module-input-method-face)))
   (add-to-list 'awesome-tray-module-alist
-               '("flymake*" . (erica-awesome-tray-module-flymake-info nil)))
+               '("flymake*" . (erica-awesome-tray-module-flymake-info)))
   (awesome-tray-mode 1))
 
 

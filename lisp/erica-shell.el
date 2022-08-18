@@ -20,6 +20,7 @@
 (require 'seq)
 (require 'subr-x)
 (require 'em-unix)
+(require 'em-dirs)
 
 ;;; from aweshell.el
 
@@ -88,12 +89,12 @@
   (eshell-command-result (string-join (cons "ls -lhA" args) " ")))
 
 (defun erica-eshell-clear ()
-  (interactive "" '(eshell-mode))
-  (end-of-buffer)
+  (interactive "" eshell-mode)
+  (goto-char (point-max))
   (eshell-kill-input)
   (insert "clear 1")
   (eshell-send-input)
-  (end-of-buffer)
+  (goto-char (point-max))
   (eshell-bol)
   (yank))
 
