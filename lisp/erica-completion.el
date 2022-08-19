@@ -17,15 +17,6 @@
 
 
 
-(use-package vertico
-  :init
-  (vertico-mode 1)
-  :custom
-  (minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt))
-  :hook
-  (minibuffer-setup . cursor-intangible-mode))
-
-
 (use-package corfu
   :custom
   (corfu-auto t)
@@ -34,15 +25,13 @@
   :config
   (global-corfu-mode 1))
 
-;; (progn
-;;  (straight-use-package 'consult)
-;;  (keymap-global-set "C-x b" #'consult-buffer)
-;;  (keymap-global-set "C-x 4 b" #'consult-buffer-other-window)
-;;  (keymap-global-set "C-x 5 b" #'consult-buffer-other-frame)
-;;  (keymap-global-set "C-x p b" #'consult-project-buffer)
-;;  (add-hook 'completion-list-mode #'consult-preview-at-point-mode)
-;;  (setq xref-show-xrefs-function #'consult-xref
-;;        xref-show-definitions-function #'consult-xref))
+(use-package vertico
+  :init
+  (vertico-mode 1)
+  :custom
+  (minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt))
+  :hook
+  (minibuffer-setup . cursor-intangible-mode))
 
 (use-package orderless
   :custom

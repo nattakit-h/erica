@@ -17,70 +17,67 @@
 
 
 
-(use-package project
-  :straight nil
-  :custom
-  (project-vc-merge-submodules nil))
+(with-eval-after-load 'project
+  (defvar project-vc-merge-submodules nil))
 
-(use-package dired
-  :straight nil
-  :custom
-  (dired-listing-switches "-laGh1v --group-directories-first")
-  :config
-  (defalias 'dired-find-file 'dired-find-alternate-file)
+(with-eval-after-load 'dired
+  (setq dired-listing-switches "-laGh1v --group-directories-first --time-style=long-iso")
+  (defalias 'dired-find-file 'dired-find-alternate-file))
+
+(with-eval-after-load 'compile
   (advice-add 'compile :after (lambda (&rest _) (call-interactively 'other-window)))
-  (advice-add 'recompile :after (lambda (&rest _) (call-interactively 'other-window))))
+  (advice-add 'recompile :after (lambda (&rest _) (call-interactively 'other-window)))
+  (add-hook 'compilation-mode (lambda () (setq-local truncate-lines nil))))
 
-(use-package compile
-  :straight nil
-  :commands (compile recompile)
-  :bind ("<f5>" . recompile)
-  :custom
-  (compile-command "make -Cbuild -j9 --no-print-directory")
-  :hook
-  (compilation-mode . (lambda () (setq-local truncate-lines nil))))
+(defvar magit-auto-revert-mode nil)
+(straight-use-package 'magit)
 
-(use-package visual-fill-column
-  :custom
-  (visual-fill-column-center-text t))
+(straight-use-package 'magit-todos)
+(add-hook 'magit-status-mode-hook #'magit-todos-mode)
 
-(use-package rg
-  :bind ("C-x p g" . rg-project)
-  :config
-  (add-to-list 'rg-custom-type-aliases '("el" . "*.el"))
-  (add-to-list 'rg-custom-type-aliases '("ss" . "*.ss *.scm *.sls *.sld")))
+;; (straight-use-package 'pdf-tools)
+;; (pdf-tools-install t)
+;; (add-to-list 'magic-mode-alist '("%PDF" . pdf-view-mode))
+;; (with-eval-after-load 'pdf-tools
+;;   (pdf-tools-install t))
 
-(use-package magit
-  :commands magit
-  :config
-  (magit-auto-revert-mode -1))
+;; (use-package rg
+;;   :defer t
+;;   ;; :after (project)
+;;   :bind ("C-x p g" . rg-project)
+;;   :config
+;;   (add-to-list 'rg-custom-type-aliases '("el" . "*.el"))
+;;   (add-to-list 'rg-custom-type-aliases '("ss" . "*.ss *.scm *.sls *.sld")))
 
-(use-package pdf-tools
-  :magic ("%PDF" . pdf-view-mode)
-  :config
-  (pdf-tools-install t))
+;; (add-to-list 'magic-mode-alist '("%PDF" . pdf-view-mode))
+;; (pp (macroexpand '(use-package pdf-tools
+;;   :magic ("%PDF" . pdf-view-mode)
+;;   :config
+;;   (pdf-tools-install t))))
 
-(use-package nov
-  :mode ("\\.epub\\'" . nov-mode)
-  :preface
-  (defun erica-setup-nov-mode ()
-    (setq-local fill-column 140)
-    (setq-local cursor-type nil)
-    (visual-line-mode 1)
-    (visual-fill-column-mode 1)
-    (face-remap-add-relative 'variable-pitch '(:family "IBM Plex Serif")))
-  :custom
-  (nov-text-width 120)
-  (nov-save-place-file (expand-file-name "nov-places" erica-data-directory))
-  :config
-  (add-to-list 'display-buffer-alist
-               '("^\\*outline"
-                 display-buffer-in-side-window
-                 (side . left)
-                 (window-width . 0.35)
-                 (inhibit-switch-frame . t)))
-  :hook
-  (nov-mode . erica-setup-nov-mode))
+;; (use-package nov
+;;   :mode ("\\.epub\\'" . nov-mode)
+;;   :custom
+;;   (nov-text-width 120)
+;;   (nov-save-place-file (expand-file-name "nov-places" erica-data-directory))
+;;   :config
+;;   (add-to-list 'display-buffer-alist
+;;                '("^\\*outline"
+;;                  display-buffer-in-side-window
+;;                  (side . left)
+;;                  (window-width . 0.35)
+;;                  (inhibit-switch-frame . t)))
+;;   :hook
+;;   (nov-mode . (lambda ()
+;;                 (use-package visual-fill-column
+;;                   :custom
+;;                   (visual-fill-column-center-text t))
+
+;;                 (setq-local fill-column 140)
+;;                 (setq-local cursor-type nil)
+;;                 (visual-line-mode 1)
+;;                 (visual-fill-column-mode 1)
+;;                 (face-remap-add-relative 'variable-pitch '(:family "IBM Plex Serif")))))
 
 
 

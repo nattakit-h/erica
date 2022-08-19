@@ -1,1 +1,3 @@
 data/
+eln-cache/
+*.elc

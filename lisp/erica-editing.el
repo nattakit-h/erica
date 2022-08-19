@@ -33,18 +33,18 @@
 (setq-default indent-tabs-mode nil)
 (setq-default truncate-lines t)
 
-(defun erica-ignore-save-scratch ()
-  (when (string-equal (buffer-name) "*scratch*")
-    (keyboard-quit)))
+;; (defun erica-ignore-save-scratch ()
+;;   (when (string-equal (buffer-name) "*scratch*")
+;;     (keyboard-quit)))
 
-(advice-add 'quit-window :filter-args
-            (lambda (args)
-              (pcase args
-                (`() '(t))
-                (`(,kill) `(,(not kill)))
-                (`(,kill ,window) `(,(not kill) ,window)))))
-(add-hook 'before-save-hook #'erica-ignore-save-scratch)
-(add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
+;; (advice-add 'quit-window :filter-args
+;;             (lambda (args)
+;;               (pcase args
+;;                 (`() '(t))
+;;                 (`(,kill) `(,(not kill)))
+;;                 (`(,kill ,window) `(,(not kill) ,window)))))
+;; (add-hook 'before-save-hook #'erica-ignore-save-scratch)
+;; (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 
 (c-add-style "cc" '("bsd" (c-basic-offset . 4) (c-offsets-alist . ((innamespace . [0])))))
 (c-add-style "c" '("bsd" (c-basic-offset . 4)))
@@ -52,23 +52,25 @@
 (setq js-indent-level 2)
 (setq css-indent-offset 2)
 
-(use-package hungry-delete
-  :custom
-  (hungry-delete-chars-to-skip " \t")
-  :config
-  (global-hungry-delete-mode 1))
+;; (use-package hungry-delete
+;;   :custom
+;;   (hungry-delete-chars-to-skip " \t")
+;;   :config
+;;   (global-hungry-delete-mode 1))
 
-(use-package visual-regexp
-  :config
-  (defalias 'replace-regexp #'vr/replace)
-  (defalias 'query-replace-regexp #'vr/query-replace))
+;; (use-package visual-regexp
+;;   :config
+;;   (defalias 'replace-regexp #'vr/replace)
+;;   (defalias 'query-replace-regexp #'vr/query-replace))
 
 
-(use-package yasnippet-snippets)
-(use-package yasnippet
-  :after (yasnippet-snippets)
-  :hook
-  ((c-modfe cmake-mode) . yas-minor-mode))
+;; (use-package yasnippet-snippets
+;;   :defer t)
+
+;; (use-package yasnippet
+;;   :after (yasnippet-snippets)
+;;   :hook
+;;   ((c-modfe cmake-mode) . yas-minor-mode))
 
 
 

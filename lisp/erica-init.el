@@ -22,6 +22,7 @@
 (defvar bootstrap-version)
 (setq straight-use-package-by-default t)
 (setq straight-base-dir erica-data-directory)
+(setq straight-check-for-modifications '(check-on-save))
 
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" straight-base-dir))
@@ -53,6 +54,7 @@
     (load-file custom-file)))
 
 (use-package exec-path-from-shell
+  :disabled
   :custom
   (path-from-shell-arguments (remove "-i" exec-path-from-shell-arguments))
   :config

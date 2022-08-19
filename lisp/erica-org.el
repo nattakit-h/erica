@@ -28,8 +28,6 @@
 (setq org-return-follows-link t)
 (setq org-mouse-1-follows-link t)
 
-
-
 ;; (straight-use-package 'org-roam)
 ;; (setq org-directory (concat (getenv "HOME") "/documents/notes/"))
 ;; (setq org-roam-directory org-directory)

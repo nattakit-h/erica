@@ -17,64 +17,69 @@
 
 
 
-(use-package glsl-mode)
+(use-package glsl-mode
+  :defer t)
 
-(use-package cmake-mode)
+(use-package cmake-mode
+  :defer t)
 
-(use-package csharp-mode)
+;; (use-package csharp-mode
+;;   :defer t)
 
-(use-package go-mode)
+;; (use-package go-mode
+;;   :defer t)
 
-(use-package scribble-mode)
-
-(use-package yaml-mode)
+;; (use-package yaml-mode
+;;   :defer t)
 
 (use-package racket-mode
+  :defer t
   :hook
   (racket-before-run . racket-repl-clear))
 
-(use-package geiser
-  :mode ("\\.sls\\'" . scheme-mode)
-  :preface
-  (defun scheme-module-indent (_state _indent-point _normal-indent) 0)
-  :custom
-  (geiser-repl-history-filename (expand-file-name "geiser-history" erica-data-directory))
-  :config
-  (put 'module 'scheme-indent-function 'scheme-module-indent)
-  (put 'and-let* 'scheme-indent-function 1)
-  (put 'parameterize 'scheme-indent-function 1)
-  (put 'handle-exceptions 'scheme-indent-function 1)
-  (put 'when 'scheme-indent-function 1)
-  (put 'unless 'scheme-indent-function 1)
-  (put 'match 'scheme-indent-function 1))
+;; (use-package scribble-mode
+;;   :defer t)
 
-(use-package geiser-chez
-  :after (geiser)
-  :custom
-  (geiser-chez-binary "chezscheme"))
+;; (use-package geiser
+;;   :defer t
+;;   :custom
+;;   (geiser-repl-history-filename (expand-file-name "geiser-history" erica-data-directory))
+;;   :config
+;;   (put 'module 'scheme-indent-function 0)
+;;   (put 'and-let* 'scheme-indent-function 1)
+;;   (put 'parameterize 'scheme-indent-function 1)
+;;   (put 'handle-exceptions 'scheme-indent-function 1)
+;;   (put 'when 'scheme-indent-function 1)
+;;   (put 'unless 'scheme-indent-function 1)
+;;   (put 'match 'scheme-indent-function 1))
 
-(use-package eglot
-  :bind ("<f8>" . eglot)
-  :custom
-  (eglot-send-changes-idle-time 0.25)
-  (eglot-autoshutdown t)
-  :config
-  (add-to-list 'eglot-server-programs '((c-mode c++-mode) . ("clangd")))
-  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
-  :hook
-  (before-save . (lambda () (when (and (fboundp 'eglot-managed-p) (eglot-managed-p))
-                              (call-interactively #'eglot-format-buffer)))))
+;; (use-package geiser-chez
+;;   :after (geiser)
+;;   :custom
+;;   (geiser-chez-binary "chezscheme"))
 
-(straight-use-package 'auctex)
-(add-to-list 'auto-mode-alist '("\\.mkiv\\'" . ConTeXt-mode))
-(setq ConTeXt-Mark-version "IV")
-(setq TeX-source-correlate-start-server t)
-(setq font-latex-fontify-sectioning 'color)
-(setq TeX-view-program-selection '((output-pdf "PDF Tools")))
-(with-eval-after-load "context"
-  (setq TeX-file-extensions (cons "mkiv" TeX-file-extensions)))
-(add-hook 'ConTeXt-mode-hook (lambda () (local-unset-key "\"") (setq TeX-command-default "ConTeXt Full")))
-(add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer)
+;; (use-package eglot
+;;   :bind ("<f8>" . eglot)
+;;   :custom
+;;   (eglot-send-changes-idle-time 0.25)
+;;   (eglot-autoshutdown t)
+;;   :config
+;;   (add-to-list 'eglot-server-programs '((c-mode c++-mode) . ("clangd")))
+;;   (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
+;;   :hook
+;;   (before-save . (lambda () (when (and (fboundp 'eglot-managed-p) (eglot-managed-p))
+;;                               (call-interactively #'eglot-format-buffer)))))
+
+;; (straight-use-package 'auctex)
+;; (add-to-list 'auto-mode-alist '("\\.mkiv\\'" . ConTeXt-mode))
+;; (setq ConTeXt-Mark-version "IV")
+;; (setq TeX-source-correlate-start-server t)
+;; (setq font-latex-fontify-sectioning 'color)
+;; (setq TeX-view-program-selection '((output-pdf "PDF Tools")))
+;; (with-eval-after-load "context"
+;;   (setq TeX-file-extensions (cons "mkiv" TeX-file-extensions)))
+;; (add-hook 'ConTeXt-mode-hook (lambda () (local-unset-key "\"") (setq TeX-command-default "ConTeXt Full")))
+;; (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer)
 
 
 

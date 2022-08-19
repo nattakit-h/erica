@@ -15,77 +15,51 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-;; Standard directories
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Appearance
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars . nil) default-frame-alist)
+
+(setq frame-title-format "Erica %& %f")
+(setq inhibit-startup-screen t)
+(setq initial-scratch-message ";; scratch buffer\n\n")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; System
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Constants ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro erica-user-subdirectory (name)
   `(expand-file-name ,(symbol-name name) user-emacs-directory))
-(defconst erica-lisp-directory (erica-user-subdirectory lisp))
 (defconst erica-config-directory (erica-user-subdirectory config))
 (defconst erica-data-directory (erica-user-subdirectory data))
+
+;; Packages ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq package-enable-at-startup nil)
 
 (when (fboundp 'startup-redirect-eln-cache)
   (startup-redirect-eln-cache
    (convert-standard-filename
     (expand-file-name "eln-cache/" erica-data-directory))))
 
-(setq load-path (append (list erica-lisp-directory) load-path))
-(setq package-user-dir (expand-file-name "packages/" erica-data-directory))
-(setq auto-save-list-file-prefix (expand-file-name "auto-save-list/saves-" erica-data-directory))
-(setq tramp-persistency-file-name (expand-file-name "tramp" erica-data-directory))
-(setq image-dired-dir (expand-file-name "image-dired" erica-data-directory))
-(setq transient-history-file (expand-file-name "transient/history.el" erica-data-directory))
-(setq transient-levels-file (expand-file-name "transient/levels.el" erica-data-directory))
-(setq transient-values-file (expand-file-name "transient/values.el" erica-data-directory))
-(setq url-configuration-directory (expand-file-name "url" erica-data-directory))
-(setq eshell-directory-name (expand-file-name "eshell" erica-data-directory))
+;; Optimizations ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Appearance
+(defvar default-gc-cons-threshold 8388608) ;; 8 MiB (* (expt 2 20) 8)
+(setq gc-cons-threshold most-positive-fixnum)
 
-(setq frame-resize-pixelwise t)
-(set-face-attribute 'default (selected-frame) :height 110)
-(setq modus-themes-italic-constructs t)
-(setq modus-themes-bold-constructs t)
-(setq modus-themes-mode-line '(borderless))
-(setq modus-themes-region '(no-extend bg-only accented))
-(setq modus-themes-links '(no-underline))
-(setq modus-themes-lang-checkers '(background))
-(setq modus-themes-mixed-fonts t)
-(setq flymake-fringe-indicator-position nil)
+(setq default-file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
 
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold default-gc-cons-threshold)
+            (setq gc-cons-percentage 0.1)
 
-(load-theme 'modus-operandi t)
-(set-face-attribute 'tooltip nil :background (modus-themes-color 'bg-main))
-
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(column-number-mode 1)
-
-(setq inhibit-startup-screen t)
-(setq frame-title-format "Erica")
-(setq initial-scratch-message ";; scratch buffer\n\n")
-
-(defalias 'display-startup-echo-area-message 'ignore)
-
-;; Backup
-
-(setq auto-save-default nil)
-(setq create-lockfiles nil)
-(setq make-backup-files nil)
-
-;; Enable Commands
-
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-(put 'dired-find-alternate-file 'disabled nil)
-(put 'suspend-frame 'disabled t)
-(put 'suspend-emacs 'disabled t)
-(put 'narrow-to-region 'disabled nil)
-
-;; System
-
-(setq package-enable-at-startup nil)
-(when (featurep 'native-compile)
-  (setq native-comp-async-report-warnings-errors nil)
-  (setq native-comp-deferred-compilation t))
-
+            (setq file-name-handler-alist default-file-name-handler-alist)
+            (message (format "Initialize time: %s." (emacs-init-time))))
+          99)
