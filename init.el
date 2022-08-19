@@ -19,13 +19,13 @@
 ;; Config
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar erica-font-mono (font-spec :name "Iberis Mono"))
-(defvar erica-font-sans (font-spec :name "Iberis Sans"))
-(defvar erica-font-serif  (font-spec :name "IBM Plex Serif" :weight 'medium))
-(defvar erica-font-thai  (font-spec :name "IBM Plex Sans Thai Looped"))
-(defvar erica-font-japanese  (font-spec :name "IBM Plex Sans JP" :weight 'medium))
+(defvar erica-font-mono '("Iberis Mono"))
+(defvar erica-font-sans '("Iberis Sans"))
+(defvar erica-font-serif  '("IBM Plex Serif" :weight medium))
+(defvar erica-font-thai  '("IBM Plex Sans Thai Looped" :weight medium))
+(defvar erica-font-japanese  '("IBM Plex Sans JP" :weight medium))
 
-(defvar erica-input-method-list '("erica" "thai-kesmanee"))
+(defvar erica-input-method-list '("erica" "thai-kesmanee" "japanese-mozc"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; System
@@ -105,11 +105,11 @@
 
 ;; fonts
 
-(set-fontset-font "fontset-default" 'ascii erica-font-mono)
-(dolist (charset '(kana han cjk-misc)) (set-fontset-font "fontset-default" charset erica-font-japanese))
-(set-fontset-font "fontset-default" 'thai erica-font-thai)
+(set-fontset-font "fontset-default" 'ascii (apply #'font-spec :name erica-font-mono))
+(dolist (charset '(kana han cjk-misc)) (set-fontset-font "fontset-default" charset (apply #'font-spec :name erica-font-japanese)))
+(set-fontset-font "fontset-default" 'thai (apply #'font-spec :name erica-font-thai))
 
-(set-face-attribute 'variable-pitch nil :family (cadr (memq :family (font-face-attributes erica-font-thai))))
+(apply #'set-face-attribute 'variable-pitch nil :family erica-font-sans)
 
 ;; todos
 
@@ -316,7 +316,7 @@
   (setq-local cursor-type nil)
   (visual-line-mode 1)
   (visual-fill-column-mode 1)
-  (face-remap-add-relative 'variable-pitch `(:family ,erica-font-serif)))
+  (face-remap-add-relative 'variable-pitch :family (car erica-font-serif)))
 
 (add-hook 'nov-mode-hook #'erica-nov-mode-setup)
 
@@ -417,6 +417,8 @@
 (set-language-environment "UTF-8")
 
 ;;; Input Method ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(require 'mozc)
 
 (quail-define-package
  "erica" ; NAME
