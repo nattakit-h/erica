@@ -325,7 +325,7 @@
     (add-hook 'before-save-hook
               (lambda ()
                 (when (eglot-managed-p)
-		          (call-interactively #'eglot-format-buffer))))))
+                  (call-interactively #'eglot-format-buffer))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tools
@@ -358,7 +358,7 @@
   (add-hook 'straight-use-package-post-build-functions
             (lambda (name)
               (when (string= "pdf-tools" name)
-		        (pdf-tools-install t t)))))
+                (pdf-tools-install t t)))))
 
 
 (defvar visual-fill-column-center-text t)
