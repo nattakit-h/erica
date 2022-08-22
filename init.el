@@ -201,7 +201,8 @@
 (defvar corfu-auto t)
 (defvar corfu-quit-at-boundary t)
 (defvar corfu-quit-no-match t)
-(elpaca corfu)
+(elpaca corfu
+  (global-corfu-mode t))
 
 (elpaca marginalia
   (marginalia-mode))
@@ -311,6 +312,13 @@
     (put 'match 'scheme-indent-function 1)))
 
 ;; eglot
+
+
+(elpaca (flymake-popon
+         :type git
+         :repo "https://codeberg.org/akib/emacs-flymake-popon.git")
+  (defalias 'flymake-eldoc-function #'ignore)
+  (add-hook 'flymake-mode-hook #'flymake-popon-mode))
 
 (defvar eglot-autoshutdown t)
 (defvar eglot-send-changes-idle-time 0.25)
