@@ -371,16 +371,16 @@
 
 (defvar nov-text-width 120)
 (defvar nov-save-place-file (expand-file-name "nov-places" erica-data-directory))
-(elpaca nov)
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-(defun erica-setup-nov-mode ()
-  (setq-local fill-column 140)
-  (setq-local cursor-type nil)
-  (visual-line-mode 1)
-  (visual-fill-column-mode 1)
-  (face-remap-add-relative 'variable-pitch :family (car erica-font-serif)))
+(elpaca nov
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+  (defun erica-setup-nov-mode ()
+    (setq-local fill-column 140)
+    (setq-local cursor-type nil)
+    (visual-line-mode 1)
+    (visual-fill-column-mode 1)
+    (face-remap-add-relative 'variable-pitch :family (car erica-font-serif)))
 
-(add-hook 'nov-mode-hook #'erica-setup-nov-mode)
+  (add-hook 'nov-mode-hook #'erica-setup-nov-mode))
 
 
 ;;; Shell
