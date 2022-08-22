@@ -15,9 +15,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Config
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Config
+
 
 (defvar erica-font-mono (font-spec :name "Iberis Mono"))
 (defvar erica-font-sans (font-spec :name "Iberis Sans"))
@@ -32,11 +32,11 @@
 
 (defvar erica-input-method-list '("erica" "thai-kesmanee" "japanese-mozc"))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; System
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; System
 
-;;; Enable commands ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; enable commands
 
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -45,7 +45,7 @@
 (put 'suspend-emacs 'disabled t)
 (put 'narrow-to-region 'disabled nil)
 
-;;; Packages ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; packages
 
 (declare-function elpaca-generate-autoloads "elpaca")
 (defvar elpaca-directory (expand-file-name "elpaca/" erica-data-directory))
@@ -74,7 +74,7 @@
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca (elpaca :host github :repo "progfolio/elpaca"))
 
-;;; Files ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; files
 
 (setq auto-save-default nil)
 (setq create-lockfiles nil)
@@ -98,11 +98,9 @@
 (global-auto-revert-mode 1)
 (global-so-long-mode 1)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Appearance
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Appearance
 
-;;; General ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (column-number-mode 1)
 (setq frame-resize-pixelwise t)
@@ -160,7 +158,7 @@
 (setq uniquify-after-kill-buffer-p t)
 (setq uniquify-ignore-buffers-re "^\\*")
 
-;; ;; todos
+;; todos
 
 (defvar hl-todo-highlight-punctuation ":")
 (defvar hl-todo-keyword-faces
@@ -187,7 +185,7 @@
      ":=" ":-" ":+" "<|" "<|>" "|>" ))
   (global-ligature-mode 1))
 
-;;; Completion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; completion
 
 (defvar savehist-additional-variables '(command-history))
 (savehist-mode 1)
@@ -211,7 +209,7 @@
 (elpaca page-break-lines
   (global-page-break-lines-mode 1))
 
-;;; Compilation ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; compilation
 
 (defvar compile-command (format "%s%s%s" "make -j" (+ 1 (num-processors)) " --no-print-directory -Cbuild"))
 (defvar fancy-compilation-override-colors nil)
@@ -222,7 +220,7 @@
   (advice-add 'recompile :after (lambda (&rest _) (call-interactively 'other-window)))
   (add-hook 'compilation-mode-hook #'fancy-compilation-mode))
 
-;;; Help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; help
 
 (setq help-window-select t)
 (setq help-window-keep-selected t)
@@ -233,20 +231,19 @@
                (mode apropos-mode help-mode Info-mode Man-mode shortdoc-mode)))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Keybinding
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Keybinding
 
 (setq use-short-answers t)
 
-;;; Window ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; window
 
 (windmove-default-keybindings 'meta)
 
 (advice-add 'split-window-below :after (lambda (&rest _) (call-interactively 'other-window)))
 (advice-add 'split-window-right :after (lambda (&rest _) (call-interactively 'other-window)))
 
-;;; Tabs ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; tabs
 
 (setq tab-bar-show 1)
 (keymap-global-set "C-t" nil)
@@ -257,16 +254,16 @@
 (keymap-global-set "C-t <right>" #'tab-next)
 (keymap-global-set "C-t RET" #'tab-switch)
 
-;;; Search ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; search
 
 (keymap-global-set "C-s" #'isearch-forward-regexp)
 (keymap-global-set "C-r" #'isearch-backward-regexp)
 (keymap-global-set "C-M-s" #'isearch-forward)
 (keymap-global-set "C-M-r" #'isearch-backward)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Editing
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Editing
+
 
 (electric-pair-mode 1)
 (delete-selection-mode 1)
@@ -278,9 +275,8 @@
 (elpaca hungry-delete
   (global-hungry-delete-mode 1))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Major Modes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Major Modes
 
 
 (elpaca cmake-mode)
@@ -296,14 +292,15 @@
 (elpaca racket-mode
   (add-hook 'racket-before-run-hook #'racket-repl-clear))
 
-(defvar geiser-chez-binary
-  (cl-some (lambda (name) (executable-find name))
-           '("chezscheme" "chez" "chez-scheme")))
-
 (elpaca geiser
   (add-to-list 'auto-mode-alist '("\\.sls\\'" . scheme-mode))
   (with-eval-after-load 'geiser
-    (elpaca geiser-chez)
+    (defvar geiser-chez-binary
+      (cl-some (lambda (name) (executable-find name))
+               '("chezscheme" "chez" "chez-scheme")))
+
+    (when geiser-chez-binary
+      (elpaca geiser-chez))
 
     (put 'module 'scheme-indent-function 1)
     (put 'and-let* 'scheme-indent-function 1)
@@ -313,7 +310,7 @@
     (put 'unless 'scheme-indent-function 1)
     (put 'match 'scheme-indent-function 1)))
 
-;;; Eglot  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; eglot
 
 (defvar eglot-autoshutdown t)
 (defvar eglot-send-changes-idle-time 0.25)
@@ -327,9 +324,8 @@
                 (when (eglot-managed-p)
                   (call-interactively #'eglot-format-buffer))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Tools
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Tools
 
 (setq vc-follow-symlinks t)
 (setq project-vc-merge-submodules nil)
@@ -350,7 +346,7 @@
     (add-to-list 'rg-custom-type-aliases '("el" . "*.el"))
     (add-to-list 'rg-custom-type-aliases '("ss" . "*.ss *.scm *.sls *.sld"))))
 
-;; ;;; Documents Viewers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; documents viewers
 
 (elpaca pdf-tools
   (autoload 'pdf-view-mode "pdf-tools")
@@ -378,10 +374,8 @@
 
 (add-hook 'nov-mode-hook #'erica-setup-nov-mode)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Shell
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+
+;;; Shell
 
 (defun eshell/cat (&optional filename)
   (if filename
@@ -468,20 +462,20 @@
 
 (add-hook 'eshell-mode-hook #'erica-eshell-hook)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Language environment
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Language environment
+
 
 (set-language-environment "UTF-8")
 
-;;; Input Method ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; input method
 
 (require 'mozc)
 
 (quail-define-package
  "erica" ; NAME
  "UTF-8" ; LANGUAGE
- "(ε)"     ; TITLE
+ "(ε)"   ; TITLE
  t       ; GUIDANCE
  "Unicode characters input method for scheme programming." ; DOCSTRING
  nil     ; TRANSLATION-KEY
@@ -605,4 +599,5 @@
 (setq-default default-input-method (car erica-input-method-list))
 (activate-input-method (car erica-input-method-list))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; End of File

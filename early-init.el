@@ -15,9 +15,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Appearance
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Appearance
+
 
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
@@ -27,18 +27,18 @@
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message ";; scratch buffer\n\n")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; System
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; System
 
-;;; Constants ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; constants
 
 (defmacro erica-user-subdirectory (name)
   `(expand-file-name ,(symbol-name name) user-emacs-directory))
 (defconst erica-config-directory (erica-user-subdirectory config))
 (defconst erica-data-directory (erica-user-subdirectory data))
 
-;; Packages ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; packages
 
 (setq package-enable-at-startup nil)
 
@@ -47,7 +47,7 @@
    (convert-standard-filename
     (expand-file-name "eln-cache/" erica-data-directory))))
 
-;; Optimizations ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; optimizations
 
 (defvar default-gc-cons-threshold 2097152) ;; 2 MiB (* (expt 2 20) 2)
 (setq gc-cons-threshold most-positive-fixnum)
@@ -67,3 +67,6 @@
                              gcs-done)))
           99)
 
+
+
+;;; End of File
