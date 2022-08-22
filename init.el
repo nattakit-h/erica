@@ -126,7 +126,7 @@
 (set-fontset-font t 'thai erica-font-thai)
 (set-fontset-font t 'han erica-font-japanese)
 (set-fontset-font t 'han erica-font-chinese nil 'append)
-(set-fontset-font t 'symbol (font-spec :family "Symbola"))
+(set-fontset-font t 'symbol erica-font-emoji)
 
 (set-face-font 'variable-pitch erica-font-sans)
 (set-face-font 'fixed-pitch erica-font-mono)
