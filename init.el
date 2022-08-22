@@ -19,11 +19,16 @@
 ;; Config
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar erica-font-mono '("Iberis Mono"))
-(defvar erica-font-sans '("Iberis Sans"))
-(defvar erica-font-serif  '("IBM Plex Serif" :weight medium))
-(defvar erica-font-thai  '("IBM Plex Sans Thai Looped" :weight medium))
-(defvar erica-font-japanese  '("IBM Plex Sans JP" :weight medium))
+(defvar erica-font-mono (font-spec :name "Iberis Mono"))
+(defvar erica-font-sans (font-spec :name "Iberis Sans"))
+(defvar erica-font-serif  (font-spec :name "IBM Plex Serif" :weight 'medium))
+(defvar erica-font-mono-serif (font-spec :name "Courier Prime" :weight 'medium))
+
+(defvar erica-font-thai  (font-spec :name "IBM Plex Sans Thai Looped" :weight 'medium))
+(defvar erica-font-japanese  (font-spec :name "Source Han Sans JP" :weight 'medium))
+(defvar erica-font-chinese  (font-spec :name "Source Han Sans CN" :weight 'medium))
+(defvar erica-font-korean  (font-spec :name "Source Han Sans KR" :weight 'medium))
+(defvar erica-font-emoji  (font-spec :name "Twitter Color Emoji"))
 
 (defvar erica-input-method-list '("erica" "thai-kesmanee" "japanese-mozc"))
 
@@ -89,11 +94,13 @@
 
 ;;; General ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(column-number-mode 1)
 (setq frame-resize-pixelwise t)
+
+(add-hook 'prog-mode-hook (lambda () (setq-local display-line-numbers t)))
 
 ;; theme
 
-(defvar modus-themes-italic-constructs t)
 (defvar modus-themes-bold-constructs t)
 (defvar modus-themes-mode-line '(borderless))
 (defvar modus-themes-region '(no-extend bg-only accented))
@@ -105,11 +112,43 @@
 
 ;; fonts
 
-(set-fontset-font "fontset-default" 'ascii (apply #'font-spec :name erica-font-mono))
-(dolist (charset '(kana han cjk-misc)) (set-fontset-font "fontset-default" charset (apply #'font-spec :name erica-font-japanese)))
-(set-fontset-font "fontset-default" 'thai (apply #'font-spec :name erica-font-thai))
+(set-fontset-font t nil erica-font-mono)
+(set-fontset-font t 'kana erica-font-japanese)
+(set-fontset-font t 'hangul erica-font-korean)
+(set-fontset-font t 'thai erica-font-thai)
+(set-fontset-font t 'han erica-font-japanese)
+(set-fontset-font t 'han erica-font-chinese nil 'append)
+(set-fontset-font t 'symbol (font-spec :family "Symbola"))
 
-(apply #'set-face-attribute 'variable-pitch nil :family erica-font-sans)
+(set-face-font 'variable-pitch erica-font-sans)
+(set-face-font 'fixed-pitch erica-font-mono)
+(set-face-font 'fixed-pitch-serif erica-font-mono-serif)
+
+;; whitespaces
+
+(setq whitespace-line-column 120)
+(setq whitespace-style '(face trailing tabs spaces line tab-mark))
+(setq whitespace-display-mappings
+      '((tab-mark ?\t [?\▷ ?\t])
+        (space-mark ?\s [?\·])
+        (space-mark ?\xA0 [?\␣])))
+(defun erica-setup-whitespace-faces ()
+  (let ((bg (modus-themes-color 'bg-main))
+        (bg-whitespace (modus-themes-color 'bg-whitespace))
+        (fg-whitespace (modus-themes-color 'fg-whitespace)))
+    (set-face-attribute 'whitespace-tab nil :background bg)
+    (set-face-attribute 'whitespace-space nil :foreground bg :background bg)
+    (set-face-attribute 'whitespace-trailing nil :foreground fg-whitespace :background bg-whitespace)))
+
+(add-hook 'prog-mode-hook  #'whitespace-mode)
+(add-hook 'whitespace-mode-hook #'erica-setup-whitespace-faces)
+
+;; uniquify
+
+(setq uniquify-buffer-name-style 'reverse)
+(setq uniquify-separator " • ")
+(setq uniquify-after-kill-buffer-p t)
+(setq uniquify-ignore-buffers-re "^\\*")
 
 ;; todos
 
@@ -156,6 +195,12 @@
 (defvar corfu-quit-no-match t)
 (straight-use-package 'corfu)
 
+(straight-use-package 'marginalia)
+(marginalia-mode)
+
+(straight-use-package 'page-break-lines)
+(global-page-break-lines-mode 1)
+
 ;;; Compilation ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar compile-command (format "%s%s%s" "make -j" (+ 1 (num-processors)) " --no-print-directory -Cbuild"))
@@ -187,7 +232,8 @@
 
 ;;; Window ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (windmove-default-keybindings)
+(windmove-default-keybindings 'meta)
+
 (advice-add 'split-window-below :after (lambda (&rest _) (call-interactively 'other-window)))
 (advice-add 'split-window-right :after (lambda (&rest _) (call-interactively 'other-window)))
 
@@ -311,14 +357,14 @@
 (defvar nov-save-place-file (expand-file-name "nov-places" erica-data-directory))
 (straight-use-package 'nov)
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-(defun erica-nov-mode-setup ()
+(defun erica-setup-nov-mode ()
   (setq-local fill-column 140)
   (setq-local cursor-type nil)
   (visual-line-mode 1)
   (visual-fill-column-mode 1)
   (face-remap-add-relative 'variable-pitch :family (car erica-font-serif)))
 
-(add-hook 'nov-mode-hook #'erica-nov-mode-setup)
+(add-hook 'nov-mode-hook #'erica-setup-nov-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell

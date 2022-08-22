@@ -49,7 +49,7 @@
 
 ;; Optimizations ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar default-gc-cons-threshold 8388608) ;; 8 MiB (* (expt 2 20) 8)
+(defvar default-gc-cons-threshold 2097152) ;; 2 MiB (* (expt 2 20) 2)
 (setq gc-cons-threshold most-positive-fixnum)
 
 (setq default-file-name-handler-alist file-name-handler-alist)
@@ -61,5 +61,9 @@
             (setq gc-cons-percentage 0.1)
 
             (setq file-name-handler-alist default-file-name-handler-alist)
-            (message (format "Initialize time: %s." (emacs-init-time))))
+            (message (format "Loaded in %.2f seconds with %d garbage collections."
+                             (float-time
+                              (time-subtract after-init-time before-init-time))
+                             gcs-done)))
           99)
+
