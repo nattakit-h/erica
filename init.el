@@ -231,6 +231,12 @@
                (display-buffer-reuse-mode-window display-buffer-pop-up-window)
                (mode apropos-mode help-mode Info-mode Man-mode shortdoc-mode)))
 
+(when (executable-find "git")
+  (elpaca diff-hl
+    (global-diff-hl-mode)
+    (with-eval-after-load 'magit
+      (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+      (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))))
 
 
 ;;; Keybinding
