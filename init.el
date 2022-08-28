@@ -298,7 +298,10 @@
 
 (elpaca scribble-mode)
 (elpaca racket-mode
-  (add-hook 'racket-before-run-hook #'racket-repl-clear))
+  (add-hook 'racket-before-run-hook #'racket-repl-clear)
+  (put 'let/drop 'racket-indent-function 1)
+  (font-lock-add-keywords 'racket-mode
+    '(("\\<\\(let/drop\\|let\\)\\>" . font-lock-keyword-face))))
 
 (elpaca geiser
   (add-to-list 'auto-mode-alist '("\\.sls\\'" . scheme-mode))
