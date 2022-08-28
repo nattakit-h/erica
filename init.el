@@ -21,7 +21,7 @@
 
 (defvar erica-font-mono (font-spec :name "Iberis Mono"))
 (defvar erica-font-sans (font-spec :name "Iberis Sans"))
-(defvar erica-font-serif  (font-spec :name "IBM Plex Serif" :weight 'medium))
+(defvar erica-font-serif  (font-spec :name "Crimson Text"))
 (defvar erica-font-mono-serif (font-spec :name "Courier Prime" :weight 'medium))
 
 (defvar erica-font-thai  (font-spec :name "IBM Plex Sans Thai Looped" :weight 'medium))
