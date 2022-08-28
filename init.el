@@ -215,7 +215,7 @@
 (defvar compile-command (format "%s%s%s" "make -j" (+ 1 (num-processors)) " --no-print-directory -Cbuild"))
 (defvar fancy-compilation-override-colors nil)
 (elpaca '(fancy-compilation :repo "https://codeberg.org/ideasman42/emacs-fancy-compilation.git"))
-(keymap-global-set "<f5>" #'recompile)
+(keymap-global-set "<f6>" #'recompile)
 (with-eval-after-load 'compilation
   (advice-add 'compile :after (lambda (&rest _) (call-interactively 'other-window)))
   (advice-add 'recompile :after (lambda (&rest _) (call-interactively 'other-window)))
