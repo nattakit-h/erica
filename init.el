@@ -207,6 +207,7 @@
 (elpaca marginalia
   (marginalia-mode))
 
+(defvar page-break-lines-max-width 110)
 (elpaca page-break-lines
   (global-page-break-lines-mode 1))
 
