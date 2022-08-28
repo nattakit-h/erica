@@ -275,6 +275,13 @@
 
 (electric-pair-mode 1)
 (delete-selection-mode 1)
+(c-add-style "c" '("bsd" (c-basic-offset . 4)))
+
+(setq js-indent-level 2)
+(setq css-indent-offset 2)
+(setq c-default-style '((java-mode . "java") (awk-mode . "awk") (other . "c")))
+
+(setq kill-do-not-save-duplicates t) ; don’t add a string to kill-ring if it duplicates the last one.
 
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
