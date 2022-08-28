@@ -97,6 +97,7 @@
 
 (global-auto-revert-mode 1)
 (global-so-long-mode 1)
+(save-place-mode 1)
 
 
 ;;; Appearance
@@ -246,6 +247,7 @@
 
 ;; window
 
+(winner-mode 1)
 (windmove-default-keybindings 'meta)
 
 (advice-add 'split-window-below :after (lambda (&rest _) (call-interactively 'other-window)))
