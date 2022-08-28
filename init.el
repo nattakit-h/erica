@@ -384,7 +384,8 @@
     (setq-local cursor-type nil)
     (visual-line-mode 1)
     (visual-fill-column-mode 1)
-    (face-remap-add-relative 'variable-pitch :family (car erica-font-serif)))
+    (face-remap-add-relative 'variable-pitch (font-face-attributes erica-font-serif))
+    (face-remap-add-relative 'variable-pitch '(:height 240)))
 
   (add-hook 'nov-mode-hook #'erica-setup-nov-mode))
 
