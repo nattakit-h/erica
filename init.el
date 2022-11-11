@@ -192,7 +192,7 @@
 (savehist-mode 1)
 
 (elpaca orderless
-  (setq completion-styles '(orderless)))
+  (setq completion-styles '(orderless basic)))
 
 (elpaca vertico
   (vertico-mode 1)
