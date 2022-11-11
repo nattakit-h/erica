@@ -586,6 +586,8 @@
  ("\\^)" ?⁾)    ; SUPERSCRIPT RIGHT PARENTHESIS
  ("\\^i" ?ⁱ)    ; SUPERSCRIPT LATIN SMALL LETTER I
  ("\\^n" ?ⁿ)    ; SUPERSCRIPT LATIN SMALL LETTER N
+ ("\\^'" ?′)    ; PRIME
+ ("\\^\"" ?″)   ; DOUBLE PRIME
 
  ("\\_0" ?₀)    ; SUBSCRIPT ZERO
  ("\\_1" ?₁)    ; SUBSCRIPT ONE
