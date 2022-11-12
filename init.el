@@ -235,6 +235,11 @@
                (display-buffer-reuse-mode-window display-buffer-pop-up-window)
                (mode apropos-mode help-mode Info-mode Man-mode shortdoc-mode)))
 
+(elpaca elisp-demos
+  (advice-add 'describe-function-1 :after #'elisp-demos-advice-describe-function-1))
+
+;; git
+
 (when (executable-find "git")
   (elpaca diff-hl
     (global-diff-hl-mode)
