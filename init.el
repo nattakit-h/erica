@@ -247,6 +247,12 @@
       (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
       (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))))
 
+;; flymake
+
+(elpaca flymake-popon
+  (defalias 'flymake-eldoc-function #'ignore)
+  (add-hook 'flymake-mode-hook #'flymake-popon-mode))
+
 
 ;;; Keybinding
 
@@ -309,8 +315,12 @@
 (elpaca go-mode)
 (elpaca yaml-mode)
 
+;; latex
+
 (defvar font-latex-fontify-sectioning 'color)
 (elpaca auctex)
+
+;; racket
 
 (elpaca scribble-mode)
 (elpaca racket-mode
@@ -318,6 +328,8 @@
   (put 'let/drop 'racket-indent-function 1)
   (font-lock-add-keywords 'racket-mode
     '(("\\<\\(let/drop\\|let\\)\\>" . font-lock-keyword-face))))
+
+;; scheme
 
 (elpaca geiser
   (add-to-list 'auto-mode-alist '("\\.sls\\'" . scheme-mode))
@@ -337,26 +349,25 @@
     (put 'unless 'scheme-indent-function 1)
     (put 'match 'scheme-indent-function 1)))
 
+;; plantuml
+
+(defvar plantuml-jar-path "/usr/share/plantuml/lib/plantuml.jar")
+(when (file-exists-p plantuml-jar-path)
+  (defvar plantuml-indent-level 2)
+  (defvar plantuml-default-exec-mode 'jar)
+  (elpaca plantuml-mode))
+
 ;; eglot
-
-
-(elpaca (flymake-popon
-         :type git
-         :repo "https://codeberg.org/akib/emacs-flymake-popon.git")
-  (defalias 'flymake-eldoc-function #'ignore)
-  (add-hook 'flymake-mode-hook #'flymake-popon-mode))
 
 (defvar eglot-autoshutdown t)
 (defvar eglot-send-changes-idle-time 0.25)
-(elpaca eglot
-  (keymap-global-set "<f8>" #'eglot)
-  (with-eval-after-load 'eglot
-    (add-to-list 'eglot-server-programs '((c-mode c++-mode) . ("clangd")))
-    (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
-    (add-hook 'before-save-hook
-              (lambda ()
-                (when (eglot-managed-p)
-                  (call-interactively #'eglot-format-buffer))))))
+(keymap-global-set "<f8>" #'eglot)
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
+  (add-hook 'before-save-hook
+            (lambda ()
+              (when (eglot-managed-p)
+                (call-interactively #'eglot-format-buffer)))))
 
 
 ;;; Tools
