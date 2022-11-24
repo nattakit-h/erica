@@ -210,7 +210,8 @@
 
 (defvar page-break-lines-max-width 110)
 (elpaca page-break-lines
-  (add-hook 'prog-mode-hook #'page-break-lines-mode))
+  (add-hook 'prog-mode-hook #'page-break-lines-mode)
+  (add-hook 'special-mode-hook #'page-break-lines-mode))
 
 ;; compilation
 
