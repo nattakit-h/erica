@@ -1,6 +1,6 @@
 ;;; GNU Emacs Configuration File -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2021 Nattakit Hosapsin <nattakit@hosapsin.com>
+;; Copyright (C) 2021-2022 Nattakit Hosapsin <nattakit@hosapsin.com>
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -15,9 +15,10 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+(require 'cl-lib)
+
 
 ;;; Appearance
-
 
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
@@ -26,6 +27,7 @@
 (setq frame-title-format "Erica %& %f")
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message ";; scratch buffer\n\n")
+(defalias 'display-startup-echo-area-message #'ignore)
 
 
 ;;; System
@@ -41,32 +43,23 @@
 ;; packages
 
 (setq package-enable-at-startup nil)
-
+(setq package-user-dir (expand-file-name "elpa" erica-data-directory)) ; required for redirecting gnupg data
 (when (fboundp 'startup-redirect-eln-cache)
   (startup-redirect-eln-cache
    (convert-standard-filename
     (expand-file-name "eln-cache/" erica-data-directory))))
 
-;; optimizations
+(defvar erica-package-host-alist
+  '((github . "github.com")
+    (gitlab . "gitlab.com")
+    (srht . "sr.ht")))
 
-(defvar default-gc-cons-threshold 2097152) ;; 2 MiB (* (expt 2 20) 2)
-(setq gc-cons-threshold most-positive-fixnum)
-
-(setq default-file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold default-gc-cons-threshold)
-            (setq gc-cons-percentage 0.1)
-
-            (setq file-name-handler-alist default-file-name-handler-alist)
-            (message (format "Loaded in %.2f seconds with %d garbage collections."
-                             (float-time
-                              (time-subtract after-init-time before-init-time))
-                             gcs-done)))
-          99)
-
+(cl-defun erica-package-vc-install (&key (host 'github) repo name rev backend)
+  (let* ((url (format "https://%s/%s" (car (assoc host erica-package-host-alist)) repo))
+         (interned-name (when name (intern name)))
+         (package-name (or interned-name (intern (file-name-base repo)))))
+    (unless (package-installed-p package-name)
+      (package-vc-install url interned-name rev backend))))
 
 
 ;;; End of File

@@ -1,6 +1,6 @@
 ;;; GNU Emacs Configuration File -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2021 Nattakit Hosapsin <nattakit@hosapsin.com>
+;; Copyright (C) 2021-2022 Nattakit Hosapsin <nattakit@hosapsin.com>
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,49 +30,31 @@
 (defvar erica-font-korean  (font-spec :name "Source Han Sans KR" :weight 'medium))
 (defvar erica-font-emoji  (font-spec :name "Twitter Color Emoji"))
 
-(defvar erica-input-method-list '("erica" "thai-kesmanee" "japanese-mozc"))
-
 
 ;;; System
 
+;; enable or disable functions
 
-;; enable commands
+(mapcar #'(lambda (name) (put name 'disabled nil))
+        '(upcase-region downcase-region dired-find-alternate-file narrow-to-region))
 
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-(put 'dired-find-alternate-file 'disabled nil)
-(put 'suspend-frame 'disabled t)
-(put 'suspend-emacs 'disabled t)
-(put 'narrow-to-region 'disabled nil)
+(mapcar #'(lambda (name) (put name 'disabled t))
+        '(suspend-frame suspend-emacs))
 
 ;; packages
 
-(declare-function elpaca-generate-autoloads "elpaca")
-(defvar elpaca-directory (expand-file-name "elpaca/" erica-data-directory))
-(when-let ((elpaca-repo (expand-file-name "repos/elpaca/" elpaca-directory))
-           (elpaca-build (expand-file-name "builds/elpaca/" elpaca-directory))
-           (elpaca-target (if (file-exists-p elpaca-build) elpaca-build elpaca-repo))
-           (elpaca-url  "https://www.github.com/progfolio/elpaca.git")
-           ((add-to-list 'load-path elpaca-target))
-           ((not (file-exists-p elpaca-repo)))
-           (buffer (get-buffer-create "*elpaca-bootstrap*")))
-  (condition-case-unless-debug err
-      (progn
-        (unless (zerop (call-process "git" nil buffer t "clone" elpaca-url elpaca-repo))
-          (error "%s" (list (with-current-buffer buffer (buffer-string)))))
-        (byte-recompile-directory elpaca-repo 0 'force)
-        (require 'elpaca)
-        (elpaca-generate-autoloads "elpaca" elpaca-repo)
-        (kill-buffer buffer))
-    ((error)
-     (delete-directory elpaca-directory 'recursive)
-     (with-current-buffer buffer
-       (goto-char (point-max))
-       (insert (format "\n%S" err))
-       (display-buffer buffer)))))
-(require 'elpaca-autoloads)
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca (elpaca :host github :repo "progfolio/elpaca"))
+(setq custom-file (expand-file-name "custom.el" erica-config-directory))
+(when (file-exists-p custom-file) (load custom-file t t))
+
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
+
+(use-package package
+  :custom
+  (package-user-dir (expand-file-name "elpa" erica-data-directory))
+  :config
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  (package-activate-all))
 
 ;; files
 
@@ -80,44 +62,21 @@
 (setq create-lockfiles nil)
 (setq make-backup-files nil)
 
-(defvar no-littering-var-directory erica-data-directory)
-(defvar no-littering-etc-directory erica-config-directory)
-
-(elpaca no-littering
-  (setq auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-  (setq custom-file (no-littering-expand-etc-file-name "custom.el"))
-  (when (file-exists-p custom-file) (load-file custom-file))
-
+(use-package no-littering
+  :init
+  (setq no-littering-var-directory erica-data-directory)
+  (setq no-littering-etc-directory erica-config-directory)
+  :config
   (with-eval-after-load 'recentf
     (add-to-list 'recentf-exclude no-littering-var-directory)
     (add-to-list 'recentf-exclude no-littering-etc-directory)))
 
-
-(add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
-
-(global-auto-revert-mode 1)
-(global-so-long-mode 1)
-(save-place-mode 1)
-
 
 ;;; Appearance
 
-
 (column-number-mode 1)
 (setq frame-resize-pixelwise t)
-
-(add-hook 'prog-mode-hook (lambda () (setq-local display-line-numbers t)))
-
-;; theme
-
-(defvar modus-themes-bold-constructs t)
-(defvar modus-themes-mode-line '(borderless))
-(defvar modus-themes-region '(no-extend bg-only accented))
-(defvar modus-themes-links '(no-underline))
-(defvar modus-themes-lang-checkers '(background))
-(defvar modus-themes-mixed-fonts t)
-(load-theme 'modus-operandi t)
-(set-face-attribute 'tooltip nil :background (modus-themes-color 'bg-main))
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 ;; fonts
 
@@ -132,6 +91,17 @@
 (set-face-font 'variable-pitch erica-font-sans)
 (set-face-font 'fixed-pitch erica-font-mono)
 (set-face-font 'fixed-pitch-serif erica-font-mono-serif)
+
+;; theme
+
+(defvar modus-themes-bold-constructs t)
+(defvar modus-themes-mode-line '(borderless))
+(defvar modus-themes-region '(no-extend bg-only accented))
+(defvar modus-themes-links '(no-underline))
+(defvar modus-themes-lang-checkers '(background))
+(defvar modus-themes-mixed-fonts t)
+(load-theme 'modus-operandi t)
+(set-face-attribute 'tooltip nil :background (modus-themes-color 'bg-main))
 
 ;; whitespaces
 
@@ -148,116 +118,77 @@
     (set-face-attribute 'whitespace-tab nil :background bg)
     (set-face-attribute 'whitespace-space nil :foreground bg :background bg)
     (set-face-attribute 'whitespace-trailing nil :foreground fg-whitespace :background bg-whitespace)))
-
 (add-hook 'prog-mode-hook  #'whitespace-mode)
 (add-hook 'whitespace-mode-hook #'erica-setup-whitespace-faces)
 
-;; uniquify
+;; modeline
 
-(setq uniquify-buffer-name-style 'reverse)
-(setq uniquify-separator " • ")
-(setq uniquify-after-kill-buffer-p t)
-(setq uniquify-ignore-buffers-re "^\\*")
-
-;; todos
-
-(defvar hl-todo-highlight-punctuation ":")
-(defvar hl-todo-keyword-faces
-  '(("NOTE" success bold)
-    ("INFO" success bold)
-    ("TODO" warning bold)
-    ("FIXME" error bold)
-    ("HACK" error bold)
-    ("BUG" error bold)
-    ("XXX" error bold)))
-(elpaca hl-todo
-  (global-hl-todo-mode 1))
-
-;; ligaures
-
-(elpaca ligature
-  (ligature-set-ligatures
-   t
-   '("<--" "<---" "<<-" "<-" "->" "->>" "-->" "--->"
-     "<->" "<-->" "<--->" "<---->" "<!--"
-     "<==" "<===" "<<=" "<=" "=>" "=>>" "==>" "===>" ">=" ">>="
-     "<=>" "<==>" "<===>" "<====>" "<!---"
-     "::" ":::" "<>" ":>" ;; disabled "<~~" "<~" "~>" "~~>"
-     ":=" ":-" ":+" "<|" "<|>" "|>" ))
-  (global-ligature-mode 1))
+(use-package diminish)
 
 ;; completion
 
-(defvar savehist-additional-variables '(command-history))
-(savehist-mode 1)
+(use-package vertico
+  :custom
+  ;; TODO: document this
+  (minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt))
+  :hook ((after-init . vertico-mode)
+         (minibuffer-setup . cursor-intangible-mode)))
 
-(elpaca orderless
-  (setq completion-styles '(orderless basic)))
-
-(elpaca vertico
-  (vertico-mode 1)
-  (setq minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
-
-(defvar corfu-auto t)
-(defvar corfu-quit-at-boundary t)
-(defvar corfu-quit-no-match t)
-(elpaca corfu
+(use-package corfu
+  :custom
+  (corfu-auto t)
+  (corfu-quit-at-boundary t)
+  (corfu-quit-no-match t)
+  :config
   (global-corfu-mode t))
 
-(elpaca marginalia
-  (marginalia-mode))
-
-(defvar page-break-lines-max-width 110)
-(elpaca page-break-lines
-  (add-hook 'prog-mode-hook #'page-break-lines-mode)
-  (add-hook 'special-mode-hook #'page-break-lines-mode))
+(use-package page-break-lines
+  :diminish
+  :custom
+  (page-break-lines-max-width 110)
+  :hook (prog-mode special-mode))
 
 ;; compilation
 
-(defvar fancy-compilation-override-colors nil)
-(elpaca '(fancy-compilation :repo "https://codeberg.org/ideasman42/emacs-fancy-compilation.git")
-  (keymap-global-set "<f6>" #'recompile)
-
-  (fancy-compilation-mode 1)
-  (setq compile-command (format "%s%s%s" "make -j" (+ 1 (num-processors)) " --no-print-directory -Cbuild"))
-
+(use-package fancy-compilation
+  :custom
+  (fancy-compilation-override-colors nil)
+  (compile-command (format "%s%s%s" "make -j" (+ 1 (num-processors)) " --no-print-directory -Cbuild"))
+  :config
   (advice-add 'compile :after (lambda (&rest _) (call-interactively 'other-window)))
   (advice-add 'recompile :after (lambda (&rest _) (call-interactively 'other-window)))
-  (add-hook 'compilation-mode-hook #'fancy-compilation-mode))
+  :hook compilation-mode
+  :bind ("<f5>" . recompile))
 
 ;; help
 
 (setq help-window-select t)
 (setq help-window-keep-selected t)
 
-(add-to-list 'display-buffer-alist ;; reuse windows
-             `(,(rx bos (or "*Apropos*" "*Help*" "*info*" "*Man" "*Shortdoc") (0+ not-newline))
-               (display-buffer-reuse-mode-window display-buffer-pop-up-window)
-               (mode apropos-mode help-mode Info-mode Man-mode shortdoc-mode)))
+(use-package eldoc
+  :diminish)
 
-(elpaca elisp-demos
-  (advice-add 'describe-function-1 :after #'elisp-demos-advice-describe-function-1))
+;; todos
 
-;; git
-
-(when (executable-find "git")
-  (elpaca diff-hl
-    (global-diff-hl-mode)
-    (with-eval-after-load 'magit
-      (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
-      (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))))
-
-;; flymake
-
-(elpaca flymake-popon
-  (defalias 'flymake-eldoc-function #'ignore)
-  (add-hook 'flymake-mode-hook #'flymake-popon-mode))
+(use-package hl-todo
+  :custom
+  (hl-todo-highlight-punctuation ":")
+  (hl-todo-keyword-faces
+   '(("NOTE" success bold)
+     ("INFO" success bold)
+     ("TODO" warning bold)
+     ("FIXME" error bold)
+     ("HACK" error bold)
+     ("BUG" error bold)
+     ("XXX" error bold)))
+  :config
+  (global-hl-todo-mode 1))
 
 
 ;;; Keybinding
 
 (setq use-short-answers t)
+(keymap-global-set "<f12>" #'restart-emacs)
 
 ;; window
 
@@ -267,31 +198,14 @@
 (advice-add 'split-window-below :after (lambda (&rest _) (call-interactively 'other-window)))
 (advice-add 'split-window-right :after (lambda (&rest _) (call-interactively 'other-window)))
 
-;; tabs
-
-(setq tab-bar-show 1)
-(keymap-global-set "C-t" nil)
-(keymap-global-set "C-t 0" #'tab-close)
-(keymap-global-set "C-t 1" #'tab-close-other)
-(keymap-global-set "C-t 2" #'tab-new)
-(keymap-global-set "C-t <left>" #'tab-previous)
-(keymap-global-set "C-t <right>" #'tab-next)
-(keymap-global-set "C-t RET" #'tab-switch)
-
-;; search
-
-(keymap-global-set "C-s" #'isearch-forward-regexp)
-(keymap-global-set "C-r" #'isearch-backward-regexp)
-(keymap-global-set "C-M-s" #'isearch-forward)
-(keymap-global-set "C-M-r" #'isearch-backward)
-
 
 ;;; Editing
 
-
+(desktop-save-mode 1)
 (electric-pair-mode 1)
 (delete-selection-mode 1)
 (c-add-style "c" '("bsd" (c-basic-offset . 4)))
+(setq-default fill-column 100)
 
 (setq js-indent-level 2)
 (setq css-indent-offset 2)
@@ -302,147 +216,144 @@
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
-(defvar hungry-delete-chars-to-skip " \t")
-(elpaca hungry-delete
+(use-package hungry-delete
+  :custom
+  (hungry-delete-chars-to-skip " \t")
+  :config
   (global-hungry-delete-mode 1))
+
+(use-package bookmark+
+  :ensure nil
+  :init (erica-package-vc-install :repo "emacsmirror/bookmark-plus"))
 
 
 ;;; Major Modes
 
+(use-package geiser
+  :defer t)
 
-(elpaca cmake-mode)
-(elpaca csharp-mode)
-(elpaca glsl-mode)
-(elpaca go-mode)
-(elpaca yaml-mode)
+(use-package geiser-racket
+  :defer t
+  :hook (scribble-mode . geiser-mode))
 
-;; latex
+(use-package geiser-chez
+  :defer t)
 
-(defvar font-latex-fontify-sectioning 'color)
-(elpaca auctex)
+(use-package scribble-mode
+  :defer t)
 
-;; racket
+(use-package treesit
+  :ensure nil
+  :commands (treesit-install-language-grammar erica-treesit-install-all-languages)
+  :init
+  (setq treesit-language-source-alist
+        '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+          (c . ("https://github.com/tree-sitter/tree-sitter-c"))
+          (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
+          (css . ("https://github.com/tree-sitter/tree-sitter-css"))
+          (go . ("https://github.com/tree-sitter/tree-sitter-go"))
+          (html . ("https://github.com/tree-sitter/tree-sitter-html"))
+          (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
+          (json . ("https://github.com/tree-sitter/tree-sitter-json"))
+          (lua . ("https://github.com/tjdevries/tree-sitter-lua"))
+          (make . ("https://github.com/alemuller/tree-sitter-make"))
+          (ocaml . ("https://github.com/tree-sitter/tree-sitter-ocaml" nil "ocaml/src"))
+          (python . ("https://github.com/tree-sitter/tree-sitter-python"))
+          (php . ("https://github.com/tree-sitter/tree-sitter-php"))
+          (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src"))
+          (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby"))
+          (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
+          (sql . ("https://github.com/m-novikov/tree-sitter-sql"))
+          (toml . ("https://github.com/tree-sitter/tree-sitter-toml"))
+          (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
+          (zig . ("https://github.com/GrayJack/tree-sitter-zig"))))
+  (setq treesit-extra-load-path (list (expand-file-name "treesit" erica-data-directory)))
+  (setq major-mode-remap-alist '((c-mode . c-ts-mode) (c++-mode . c++-ts-mode)))
+  :config
 
-(elpaca scribble-mode)
-(elpaca racket-mode
-  (add-hook 'racket-before-run-hook #'racket-repl-clear)
-  (put 'let/drop 'racket-indent-function 1)
-  (font-lock-add-keywords 'racket-mode
-    '(("\\<\\(let/drop\\|let\\)\\>" . font-lock-keyword-face))))
-
-;; scheme
-
-(elpaca geiser
-  (add-to-list 'auto-mode-alist '("\\.sls\\'" . scheme-mode))
-  (with-eval-after-load 'geiser
-    (defvar geiser-chez-binary
-      (cl-some (lambda (name) (executable-find name))
-               '("chezscheme" "chez" "chez-scheme")))
-
-    (when geiser-chez-binary
-      (elpaca geiser-chez))
-
-    (put 'module 'scheme-indent-function 1)
-    (put 'and-let* 'scheme-indent-function 1)
-    (put 'parameterize 'scheme-indent-function 1)
-    (put 'handle-exceptions 'scheme-indent-function 1)
-    (put 'when 'scheme-indent-function 1)
-    (put 'unless 'scheme-indent-function 1)
-    (put 'match 'scheme-indent-function 1)))
-
-;; plantuml
-
-(defvar plantuml-jar-path "/usr/share/plantuml/lib/plantuml.jar")
-(when (file-exists-p plantuml-jar-path)
-  (defvar plantuml-indent-level 2)
-  (defvar plantuml-default-exec-mode 'jar)
-  (elpaca plantuml-mode))
-
-;; eglot
-
-(defvar eglot-autoshutdown t)
-(defvar eglot-send-changes-idle-time 0.25)
-(keymap-global-set "<f8>" #'eglot)
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
-  (add-hook 'before-save-hook
-            (lambda ()
-              (when (eglot-managed-p)
-                (call-interactively #'eglot-format-buffer)))))
+  (defun erica-treesit-install-all-languages ()
+    "Install all languages specified by `treesit-language-source-alist'."
+    (interactive)
+    (let ((languages (mapcar 'car treesit-language-source-alist)))
+      (dolist (lang languages)
+        (treesit-install-language-grammar lang)
+        (message "`%s' parser was installed." lang)
+        (sit-for 0.75))))
+  (advice-add
+   'treesit--install-language-grammar-1
+   :around
+   (lambda (old-function out-dir &rest arguments)
+     (apply old-function (car treesit-extra-load-path) arguments))))
 
 
+
 ;;; Tools
+
+(defun sort-words (reverse beg end)
+  "Sort words in region alphabetically, in REVERSE if negative.
+    Prefixed with negative \\[universal-argument], sorts in reverse.
+    The variable `sort-fold-case' determines whether alphabetic case
+    affects the sort order.
+    See `sort-regexp-fields'."
+  (interactive "*P\nr")
+  (sort-regexp-fields reverse "\\w+" "\\&" beg end))
+
+(defun sort-symbols (reverse beg end)
+  "Sort symbols in region alphabetically, in REVERSE if negative.
+    See `sort-words'."
+  (interactive "*P\nr")
+  (sort-regexp-fields reverse "\\(\\sw\\|\\s_\\)+" "\\&" beg end))
+
+;; vc
 
 (setq vc-follow-symlinks t)
 (setq project-vc-merge-submodules nil)
 
+;; dired
+
 (setq dired-listing-switches "-laGh1v --group-directories-first --time-style=long-iso")
 (defalias 'dired-find-file 'dired-find-alternate-file)
 
-(when (executable-find "git")
-  (defvar magit-auto-revert-mode nil)
-  (elpaca magit)
-  (elpaca magit-todos
-    (add-hook 'magit-status-mode-hook #'magit-todos-mode)))
+;; flymake
 
-(when (executable-find "rg")
-  (elpaca rg)
-  (keymap-global-set "C-x p g" #'rg-project)
-  (with-eval-after-load 'rg
-    (add-to-list 'rg-custom-type-aliases '("el" . "*.el"))
-    (add-to-list 'rg-custom-type-aliases '("ss" . "*.ss *.scm *.sls *.sld"))))
+(use-package flymake-popon
+  :config
+  (defalias 'flymake-eldoc-function #'ignore)
+  :hook flymake-mode)
 
-;; documents viewers
+;; pdf
 
-(elpaca pdf-tools
-  (autoload 'pdf-view-mode "pdf-tools")
-  (add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
-  (add-hook 'straight-use-package-post-build-functions
-            (lambda (name)
-              (when (string= "pdf-tools" name)
-                (pdf-tools-install t t)))))
+(use-package pdf-tools
+  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :bind (:map pdf-view-mode-map
+              ("o" . pdf-outline)))
 
+;; git
 
-(defvar visual-fill-column-center-text t)
-(elpaca visual-fill-column)
+(use-package magit
+  :defer t)
 
-
-(defvar nov-text-width 120)
-(defvar nov-save-place-file (expand-file-name "nov-places" erica-data-directory))
-(elpaca nov
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  (defun erica-setup-nov-mode ()
-    (setq-local fill-column 140)
-    (setq-local cursor-type nil)
-    (visual-line-mode 1)
-    (visual-fill-column-mode 1)
-    (face-remap-add-relative 'variable-pitch (font-face-attributes erica-font-serif))
-    (face-remap-add-relative 'variable-pitch '(:height 240)))
-
-  (add-hook 'nov-mode-hook #'erica-setup-nov-mode))
+(use-package magit-todos
+  :hook magit-status-mode)
 
 
 ;;; Shell
 
-(defun eshell/cat (&optional filename)
-  (if filename
-      (let ((existing-buffer (get-file-buffer filename))
-            (buffer (find-file-noselect filename)))
-        (eshell-print
-         (with-current-buffer buffer
-           (if (fboundp 'font-lock-ensure)
-               (font-lock-ensure)
-             (with-no-warnings
-               (font-lock-fontify-buffer)))
-           (let ((contents (buffer-string)))
-             (remove-text-properties 0 (length contents) '(read-only nil) contents)
-             contents)))
-        (unless existing-buffer
-          (kill-buffer buffer))
-        nil)
-    (eshell-command-result "cat")))
+(defmacro defcommand (name command)
+  `(defun ,(intern (concat "eshell/" (symbol-name name))) (&rest args)
+     (eshell-command-result (string-join (cons ,command args) " "))))
+
+(defcommand l "ls")
+(defcommand la "ls -A")
+(defcommand ll "ls -lh")
+(defcommand lla "ls -lhA")
+(defcommand pls "sudo")
+
+(defun eshell/em (file)
+  (find-file file))
 
 (defun eshell/unpack (&optional file &rest args)
+  ;; TODO: support listing file in archive
   (if file
       (let ((command (seq-some (lambda (x)
                                  (if (string-match-p (car x) file)
@@ -458,20 +369,10 @@
                                  (".*\.zip" "unzip")
                                  (".*\.Z" "uncompress")
                                  (".*" "echo 'Could not unpack the file:'")))))
-        (let ((unpack-command(concat command " " file " " (mapconcat 'identity args " "))))
+        (let ((unpack-command (concat command " " file " " (mapconcat 'identity args " "))))
           (eshell/printnl "Unpack command: " unpack-command)
           (eshell-command-result unpack-command)))
     "unpack: missing file operand"))
-
-(defun eshell/em (file)
-  (find-file file))
-
-(defun eshell/pls (&rest args)
-  (eshell-command-result (string-join (cons "sudo" args) " ")))
-
-(defun eshell/ll (&rest args)
-  (eshell-command-result (string-join (cons "ls -lhA" args) " ")))
-
 
 (defun erica-shell-prompt ()
   (concat
@@ -499,154 +400,15 @@
   (setenv "TERM" "eterm-color")
   (local-set-key (kbd "C-c M-o") #'erica-eshell-clear))
 
-(keymap-global-set "C-c e" #'eshell)
-
 (setq eshell-banner-message "")
 (setq eshell-prefer-lisp-functions t)
 (setq eshell-prefer-lisp-variables t)
-(setq eshell-prompt-function #'erica-shell-prompt)
 (setq eshell-prompt-regexp "^[$#] ")
+(setq eshell-prompt-function #'erica-shell-prompt)
+
+(keymap-global-set "C-c e" #'eshell)
 
 (add-hook 'eshell-mode-hook #'erica-eshell-hook)
-
-
-;;; Language environment
-
-
-(set-language-environment "UTF-8")
-
-;; input method
-
-(require 'mozc)
-
-(quail-define-package
- "erica" ; NAME
- "UTF-8" ; LANGUAGE
- "(ε)"   ; TITLE
- t       ; GUIDANCE
- "Unicode characters input method for scheme programming." ; DOCSTRING
- nil     ; TRANSLATION-KEY
- t       ; FORGET-LAST-SELECTION
- nil     ; DETERMINISTIC
- nil     ; KBD-TRANSLATE
- nil     ; SHOW-LAYOUT
- nil     ; CREATE-DECODE-MAP
- nil     ; MAXIMUM-SHORTEST
- nil     ; OVERLAY-PLIST
- nil     ; UPDATE-TRANSLATION-FUNCION
- nil     ; CONVERSION-KEYS
- t)      ; SIMPLE
-
-(quail-define-rules
- ("\\ga" ?α)    ; GREEK SMALL LETTER ALPHA
- ("\\gb" ?β)    ; GREEK SMALL LETTER BETA
- ("\\gg" ?γ)    ; GREEK SMALL LETTER GAMMA
- ("\\gd" ?δ)    ; GREEK SMALL LETTER DELTA
- ("\\ge" ?ε)    ; GREEK SMALL LETTER EPSILON
- ("\\gz" ?ζ)    ; GREEK SMALL LETTER ZETA
- ("\\gy" ?η)    ; GREEK SMALL LETTER ETA
- ("\\gh" ?θ)    ; GREEK SMALL LETTER THETA
- ("\\gi" ?ι)    ; GREEK SMALL LETTER IOTA
- ("\\gk" ?κ)    ; GREEK SMALL LETTER KAPPA
- ("\\gl" ?λ)    ; GREEK SMALL LETTER LAMDA
- ("\\gm" ?μ)    ; GREEK SMALL LETTER MU
- ("\\gn" ?ν)    ; GREEK SMALL LETTER NU
- ("\\gc" ?ξ)    ; GREEK SMALL LETTER XI
- ("\\go" ?ο)    ; GREEK SMALL LETTER OMNICRON
- ("\\gp" ?π)    ; GREEK SMALL LETTER PI
- ("\\gr" ?ρ)    ; GREEK SMALL LETTER RHO
- ("\\gs" ?σ)    ; GREEK SMALL LETTER SIGMA
- ("\\gt" ?τ)    ; GREEK SMALL LETTER TAU
- ("\\gu" ?υ)    ; GREEK SMALL LETTER UPSILON
- ("\\gf" ?φ)    ; GREEK SMALL LETTER PHI
- ("\\gx" ?χ)    ; GREEK SMALL LETTER CHI
- ("\\gq" ?ψ)    ; GREEK SMALL LETTER PSI
- ("\\gw" ?ω)    ; GREEK SMALL LETTER OMEGA
-
- ("\\gA" ?Α)    ; GREEK CAPITAL LETTER ALPHA
- ("\\gB" ?Β)    ; GREEK CAPITAL LETTER BETA
- ("\\gG" ?Γ)    ; GREEK CAPITAL LETTER GAMMA
- ("\\gD" ?Δ)    ; GREEK CAPITAL LETTER DELTA
- ("\\gE" ?Ε)    ; GREEK CAPITAL LETTER EPSILON
- ("\\gZ" ?Ζ)    ; GREEK CAPITAL LETTER ZETA
- ("\\gY" ?Η)    ; GREEK CAPITAL LETTER ETA
- ("\\gH" ?Θ)    ; GREEK CAPITAL LETTER THETA
- ("\\gI" ?Ι)    ; GREEK CAPITAL LETTER IOTA
- ("\\gK" ?Κ)    ; GREEK CAPITAL LETTER KAPPA
- ("\\gL" ?Λ)    ; GREEK CAPITAL LETTER LAMDA
- ("\\gM" ?Μ)    ; GREEK CAPITAL LETTER MU
- ("\\gN" ?Ν)    ; GREEK CAPITAL LETTER NU
- ("\\gC" ?Ξ)    ; GREEK CAPITAL LETTER XI
- ("\\gO" ?Ο)    ; GREEK CAPITAL LETTER OMNICRON
- ("\\gP" ?Π)    ; GREEK CAPITAL LETTER PI
- ("\\gR" ?Ρ)    ; GREEK CAPITAL LETTER RHO
- ("\\gS" ?Σ)    ; GREEK CAPITAL LETTER SIGMA
- ("\\gT" ?Τ)    ; GREEK CAPITAL LETTER TAU
- ("\\gU" ?Υ)    ; GREEK CAPITAL LETTER UPSILON
- ("\\gF" ?Φ)    ; GREEK CAPITAL LETTER PHI
- ("\\gX" ?Χ)    ; GREEK CAPITAL LETTER CHI
- ("\\gQ" ?Ψ)    ; GREEK CAPITAL LETTER PSI
- ("\\gW" ?Ω)    ; GREEK CAPITAL LETTER OMEGA
-
- ("\\^0" ?⁰)    ; SUPERSCRIPT DIGIT ZERO
- ("\\^1" ?¹)    ; SUPERSCRIPT DIGIT ONE
- ("\\^2" ?²)    ; SUPERSCRIPT DIGIT TWO
- ("\\^3" ?³)    ; SUPERSCRIPT DIGIT THREE
- ("\\^4" ?⁴)    ; SUPERSCRIPT DIGIT FOUR
- ("\\^5" ?⁵)    ; SUPERSCRIPT DIGIT FIVE
- ("\\^6" ?⁶)    ; SUPERSCRIPT DIGIT SIX
- ("\\^7" ?⁷)    ; SUPERSCRIPT DIGIT SEVEN
- ("\\^8" ?⁸)    ; SUPERSCRIPT DIGIT EIGHT
- ("\\^9" ?⁹)    ; SUPERSCRIPT DIGIT NINE
- ("\\^+" ?⁺)    ; SUPERSCRIPT PLUS SIGN
- ("\\^-" ?⁻)    ; SUPERSCRIPT MINUS
- ("\\^=" ?⁼)    ; SUPERSCRIPT EQUALS SIGN
- ("\\^(" ?⁽)    ; SUPERSCRIPT LEFT PARENTHESIS
- ("\\^)" ?⁾)    ; SUPERSCRIPT RIGHT PARENTHESIS
- ("\\^i" ?ⁱ)    ; SUPERSCRIPT LATIN SMALL LETTER I
- ("\\^n" ?ⁿ)    ; SUPERSCRIPT LATIN SMALL LETTER N
- ("\\^'" ?′)    ; PRIME
- ("\\^\"" ?″)   ; DOUBLE PRIME
-
- ("\\_0" ?₀)    ; SUBSCRIPT ZERO
- ("\\_1" ?₁)    ; SUBSCRIPT ONE
- ("\\_2" ?₂)    ; SUBSCRIPT TWO
- ("\\_3" ?₃)    ; SUBSCRIPT THREE
- ("\\_4" ?₄)    ; SUBSCRIPT FOUR
- ("\\_5" ?₅)    ; SUBSCRIPT FIVE
- ("\\_6" ?₆)    ; SUBSCRIPT SIX
- ("\\_7" ?₇)    ; SUBSCRIPT SEVEN
- ("\\_8" ?₈)    ; SUBSCRIPT EIGHT
- ("\\_9" ?₉)    ; SUBSCRIPT NINE
- ("\\_+" ?₊)    ; SUBSCRIPT PLUS SIGN
- ("\\_-" ?₋)    ; SUBSCRIPT MINUS
- ("\\_=" ?₌)    ; SUBSCRIPT EQUALS SIGN
- ("\\_(" ?₍)    ; SUBSCRIPT LEFT PARENTHESIS
- ("\\_)" ?₎)    ; SUBSCRIPT RIGHT PARENTHESIS
-
- ("\\ma" ?∀)    ; FOR ALL
- ("\\mu" ?∪)    ; UNION
- ("\\mi" ?∩)    ; INTERSECTION
-
- ("\\\\" ?\\))  ; REVERSE SOLIDUS
-
-(defun erica-cycle-input-method ()
-  (interactive)
-  (cond
-   ((or (not current-input-method)
-        (not (member current-input-method erica-input-method-list)))
-    (activate-input-method default-input-method))
-   ((equal (member current-input-method erica-input-method-list)
-           (last erica-input-method-list))
-    (activate-input-method (car erica-input-method-list)))
-   (t
-    (activate-input-method (cadr (member current-input-method erica-input-method-list))))))
-
-(keymap-global-set "C-\\" #'erica-cycle-input-method)
-
-
-(setq-default default-input-method (car erica-input-method-list))
-(activate-input-method (car erica-input-method-list))
 
 
 ;;; End of File
