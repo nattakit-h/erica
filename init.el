@@ -150,13 +150,17 @@
          (minibuffer-setup . cursor-intangible-mode)))
 
 (use-package corfu
-  ;; TODO: investigate corfu extensions
+  :straight (corfu :files ("*.el" "extensions/*.el"))
   :custom
   (corfu-auto t)
   (corfu-quit-at-boundary t)
   (corfu-quit-no-match t)
-  :config
-  (global-corfu-mode))
+  :bind
+  ( :map corfu-map
+    ("C-d" . corfu-info-documentation)
+    ("C-l" . corfu-info-location))
+  ;; NOTE: global-corfu-mode do not work with eglot
+  :hook (prog-mode . corfu-mode))
 
 (use-package orderless
   :custom
