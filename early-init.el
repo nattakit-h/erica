@@ -18,9 +18,13 @@
 
 ;;; Appearance
 
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(vertical-scroll-bars . nil) default-frame-alist)
+(modify-all-frames-parameters
+ '((right-fringe . 0)
+   (left-fringe . 0)
+   (menu-bar-lines . 0)
+   (tool-bar-lines . 0)
+   (vertical-scroll-bars . nil)
+   (internal-border-width . 0)))
 
 (setq frame-title-format "Erica %& %f")
 (setq inhibit-startup-screen t)
