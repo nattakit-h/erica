@@ -103,8 +103,17 @@
 (load-theme 'modus-operandi t)
 (set-face-attribute 'tooltip nil :background (modus-themes-color 'bg-main))
 
+(use-package marginalia
+  :config
+  (marginalia-mode))
+
+;; modeline
+
+(use-package diminish)
+
 ;; whitespaces
 
+(diminish 'whitespace-mode)
 (setq whitespace-line-column 120)
 (setq whitespace-style '(face trailing tabs spaces line tab-mark))
 (setq whitespace-display-mappings
@@ -115,15 +124,12 @@
   (let ((bg (modus-themes-color 'bg-main))
         (bg-whitespace (modus-themes-color 'bg-whitespace))
         (fg-whitespace (modus-themes-color 'fg-whitespace)))
+    (diminish 'whitespace-mode)
     (set-face-attribute 'whitespace-tab nil :background bg)
     (set-face-attribute 'whitespace-space nil :foreground bg :background bg)
     (set-face-attribute 'whitespace-trailing nil :foreground fg-whitespace :background bg-whitespace)))
 (add-hook 'prog-mode-hook  #'whitespace-mode)
 (add-hook 'whitespace-mode-hook #'erica-setup-whitespace-faces)
-
-;; modeline
-
-(use-package diminish)
 
 ;; completion
 
@@ -139,8 +145,41 @@
   (corfu-auto t)
   (corfu-quit-at-boundary t)
   (corfu-quit-no-match t)
+  (corfu-popupinfo-delay '(0.25 . 0.1))
+  (corfu-popupinfo-hide nil)
   :config
-  (global-corfu-mode t))
+  (global-corfu-mode)
+  (corfu-popupinfo-mode))
+
+(use-package corfu-terminal
+  :if (not (display-graphic-p))
+  :config
+  (corfu-terminal-mode))
+
+(use-package kind-icon
+  :if (display-graphic-p)
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+(use-package consult
+  :config
+  (consult-customize
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   consult-buffer consult-project-buffer
+   :preview-key (kbd "M-."))
+  :bind (("C-s" . consult-line)
+         ("M-g M-g" . consult-goto-line)))
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
+;; page-break
 
 (use-package page-break-lines
   :diminish
@@ -184,16 +223,31 @@
   :config
   (global-hl-todo-mode 1))
 
+;; visual regexp
+
+(use-package visual-regexp
+  :bind
+  (("C-M-%" . vr/query-replace)))
+
 
 ;;; Keybinding
 
 (setq use-short-answers t)
 (keymap-global-set "<f12>" #'restart-emacs)
+(keymap-global-set "C-z" #'ignore)
+(keymap-global-set "C-x C-z" #'ignore)
 
 ;; window
 
-(winner-mode 1)
+(windmove-mode 1)
 (windmove-default-keybindings 'meta)
+
+(use-package ace-window
+  :custom
+  (aw-ignore-current t)
+  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  :bind
+  (("C-x C-o" . ace-window)))
 
 (advice-add 'split-window-below :after (lambda (&rest _) (call-interactively 'other-window)))
 (advice-add 'split-window-right :after (lambda (&rest _) (call-interactively 'other-window)))
@@ -201,7 +255,6 @@
 
 ;;; Editing
 
-(desktop-save-mode 1)
 (electric-pair-mode 1)
 (delete-selection-mode 1)
 (c-add-style "c" '("bsd" (c-basic-offset . 4)))
@@ -209,22 +262,131 @@
 
 (setq js-indent-level 2)
 (setq css-indent-offset 2)
+(setq c-ts-mode-indent-offset 4)
+(setq c-ts-mode-indent-style 'bsd)
 (setq c-default-style '((java-mode . "java") (awk-mode . "awk") (other . "c")))
 
-(setq kill-do-not-save-duplicates t) ; don’t add a string to kill-ring if it duplicates the last one.
+;; don’t add a string to kill-ring if it duplicates the last one.
+(setq kill-do-not-save-duplicates t)
 
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
 (use-package hungry-delete
+  :diminish hungry-delete-mode
   :custom
   (hungry-delete-chars-to-skip " \t")
   :config
   (global-hungry-delete-mode 1))
 
+(use-package avy
+  :bind (("<C-henkan>" . avy-goto-line)
+         ("<henkan>" . avy-goto-char-timer)))
+
+(use-package smartparens
+  :init
+  (require 'smartparens-config)
+  :bind
+  ( :map smartparens-mode-map
+    ("C-M-f" . sp-forward-sexp)
+    ("C-M-b" . sp-backward-sexp)
+    ("C-M-d" . sp-down-sexp)
+    ("C-M-a" . sp-backward-down-sexp)
+    ("C-S-a" . sp-beginning-of-sexp)
+    ("C-S-e" . sp-end-of-sexp)
+    ("C-M-e" . sp-up-sexp)
+    ("C-M-u" . sp-backward-up-sexp)
+    ("C-M-t" . sp-transpose-sexp)
+    ("C-M-n" . sp-forward-hybrid-sexp)
+    ("C-M-p" . sp-backward-hybrid-sexp)
+    ("C-M-k" . sp-kill-sexp)
+    ("C-M-w" . sp-copy-sexp)
+    ("M-r"   . sp-unwrap-sexp)
+    ("M-<backspace>" . sp-backward-unwrap-sexp)
+    ("C-)" . sp-forward-slurp-sexp)
+    ("C-}" . sp-forward-barf-sexp)
+    ("C-(" . sp-backward-slurp-sexp)
+    ("C-{" . sp-backward-barf-sexp)
+    ("M-s" . sp-splice-sexp)
+    ("C-M-<delete>" . sp-splice-sexp-killing-forward)
+    ("C-M-<backspace>" . sp-splice-sexp-killing-backward)
+    ("C-S-<backspace>" . sp-splice-sexp-killing-around)
+    ("C-," . sp-select-next-thing-exchange)
+    ("C-<left_bracket>" . sp-select-previous-thing)
+    ("C-<" . sp-select-next-thing)
+    ("M-F" . sp-forward-symbol)
+    ("M-B" . sp-backward-symbol)
+    ("C-\"" . sp-change-inner)
+    ("M-i" . sp-change-enclosing)))
+
+(use-package puni
+  :bind
+  ( :map puni-mode-map
+    ;; movement
+    ("C-M-f" . puni-forward-sexp-or-up-list)
+    ("C-M-b" . puni-backward-sexp-or-up-list)
+    ("C-M-t" . puni-transpose)
+    ;; slurping & barfing
+    ("C-}" . puni-barf-forward)
+    ("C-{" . puni-barf-backward)
+    ("C-)" . puni-slurp-forward)
+    ("C-(" . puni-slurp-backward)
+    ;; changing depth
+    ("M-r" . puni-raise)
+    ("M-s" . puni-splice)
+    ("M-(" . puni-wrap-round)
+    ("M-[" . puni-wrap-square)
+    ("M-{" . puni-wrap-curly)
+    ("M-S" . puni-split)))
+
+(use-package lispy)
+
+(use-package god-mode
+  :disabled
+  :diminish (god-local-mode . " [#]")
+  :commands (erica-god-mode-cursor)
+  :config
+  ;;(god-mode)
+  (defun erica-god-mode-cursor ()
+    (if (or god-local-mode buffer-read-only)
+        (progn
+          (set-cursor-color "#ff0000")
+          (setq beacon-color "#ff0000"))
+      (progn
+        (set-cursor-color "#000000")
+        (setq beacon-color "#000000"))))
+  (defun erica-toggle-god-mode ()
+    (interactive)
+    (let ((inhibit-message t))
+      (call-interactively #'god-local-mode)))
+  (add-to-list 'god-exempt-major-modes 'dired-mode)
+  (add-to-list 'god-exempt-major-modes 'eshell-mode)
+  :bind (("<muhenkan>" . erica-toggle-god-mode)
+         ("C-x C-1" . delete-other-windows)
+         ("C-x C-2" . split-window-below)
+         ("C-x C-3" . split-window-right)
+         ("C-x C-0" . delete-window)
+         :map god-local-mode-map
+         ("." . repeat)
+         ("[" . backward-paragraph)
+         ("]" . forward-paragraph))
+  :hook (post-command . erica-god-mode-cursor))
+
 (use-package bookmark+
   :ensure nil
-  :init (erica-package-vc-install :repo "emacsmirror/bookmark-plus"))
+  :init
+  (erica-package-vc-install :repo "emacsmirror/bookmark-plus")
+  (require 'bookmark+)
+  (require 'desktop)
+  :config
+  (defun erica-desktop-save ()
+    (interactive)
+    (bmkp-set-desktop-bookmark (desktop-full-file-name)))
+  :bind (("C-c s s" . erica-desktop-save)
+         ("C-c s r" . bmkp-desktop-jump)
+         ("C-c s d" . bmkp-desktop-delete)))
+
+(use-package aggressive-indent)
 
 
 ;;; Major Modes
@@ -249,10 +411,13 @@
   (setq treesit-language-source-alist
         '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
           (c . ("https://github.com/tree-sitter/tree-sitter-c"))
+          (cmake . ("https://github.com/uyha/tree-sitter-cmake"))
           (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
           (css . ("https://github.com/tree-sitter/tree-sitter-css"))
+          (c-sharp . ("https://github.com/tree-sitter/tree-sitter-c-sharp"))
           (go . ("https://github.com/tree-sitter/tree-sitter-go"))
           (html . ("https://github.com/tree-sitter/tree-sitter-html"))
+          (java . ("https://github.com/tree-sitter/tree-sitter-java"))
           (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
           (json . ("https://github.com/tree-sitter/tree-sitter-json"))
           (lua . ("https://github.com/tjdevries/tree-sitter-lua"))
@@ -268,7 +433,12 @@
           (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
           (zig . ("https://github.com/GrayJack/tree-sitter-zig"))))
   (setq treesit-extra-load-path (list (expand-file-name "treesit" erica-data-directory)))
-  (setq major-mode-remap-alist '((c-mode . c-ts-mode) (c++-mode . c++-ts-mode)))
+  (setq major-mode-remap-alist
+        '((c-mode . c-ts-mode)
+          (c++-mode . c++-ts-mode)
+          (python-mode . python-ts-mode)
+          (java-mode . java-ts-mode)
+          (csharp-mode . csharp-ts-mode)))
   :config
 
   (defun erica-treesit-install-all-languages ()
@@ -288,6 +458,13 @@
 
 
 ;;; Tools
+
+(use-package clang-format
+  :config
+  (defun erica-clang-format ()
+    (when (file-exists-p (expand-file-name ".clang-format" (project-root (project-current))))
+      (clang-format-buffer)))
+  :hook ((c-ts-base-mode . (lambda () (add-hook 'before-save-hook #'erica-clang-format nil t)))))
 
 (defun sort-words (reverse beg end)
   "Sort words in region alphabetically, in REVERSE if negative.
@@ -312,14 +489,14 @@
 ;; dired
 
 (setq dired-listing-switches "-laGh1v --group-directories-first --time-style=long-iso")
-(defalias 'dired-find-file 'dired-find-alternate-file)
+(setq dired-kill-when-opening-new-dired-buffer t)
 
 ;; flymake
 
-(use-package flymake-popon
-  :config
-  (defalias 'flymake-eldoc-function #'ignore)
-  :hook flymake-mode)
+;; (use-package flymake-popon
+;;   :config
+;;   (defalias 'flymake-eldoc-function #'ignore)
+;;   :hook flymake-mode)
 
 ;; pdf
 
@@ -338,6 +515,9 @@
 
 
 ;;; Shell
+
+(use-package eat
+  :disabled)
 
 (defmacro defcommand (name command)
   `(defun ,(intern (concat "eshell/" (symbol-name name))) (&rest args)
