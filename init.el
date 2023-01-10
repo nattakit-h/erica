@@ -304,7 +304,11 @@
   (eglot-autoshutdown t)
   (eglot-send-changes-idle-time 0.25)
   :config
-  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider))
+  (let ((ccls-args '((cache . (directory "/tmp/ccls-cache"))
+                     (compilationDatabaseDirectory . "build"))))
+    (add-to-list 'eglot-server-programs
+                 `((c-ts-mode c++-ts-mode) . ("ccls" "--init" ,(json-serialize ccls-args)))))
+  :hook ((c-ts-mode c++-ts-mode) . eglot-ensure))
 
 
 ;;; Tools
