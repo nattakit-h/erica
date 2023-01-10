@@ -1,6 +1,6 @@
 ;;; GNU Emacs Configuration File -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2021-2022 Nattakit Hosapsin <nattakit@hosapsin.com>
+;; Copyright (C) 2021-2023 Nattakit Hosapsin <nattakit@hosapsin.com>
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -14,8 +14,6 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-(require 'cl-lib)
 
 
 ;;; Appearance
@@ -32,34 +30,22 @@
 
 ;;; System
 
-
 ;; constants
 
 (defmacro erica-user-subdirectory (name)
   `(expand-file-name ,(symbol-name name) user-emacs-directory))
 (defconst erica-config-directory (erica-user-subdirectory config))
 (defconst erica-data-directory (erica-user-subdirectory data))
+(defconst erica-module-directory (erica-user-subdirectory modules))
 
-;; packages
 
-(setq package-enable-at-startup nil)
-(setq package-user-dir (expand-file-name "elpa" erica-data-directory)) ; required for redirecting gnupg data
+;; loading
+
+(add-to-list 'load-path erica-module-directory)
+
 (when (fboundp 'startup-redirect-eln-cache)
   (startup-redirect-eln-cache
    (convert-standard-filename
     (expand-file-name "eln-cache/" erica-data-directory))))
 
-(defvar erica-package-host-alist
-  '((github . "github.com")
-    (gitlab . "gitlab.com")
-    (srht . "sr.ht")))
 
-(cl-defun erica-package-vc-install (&key (host 'github) repo name rev backend)
-  (let* ((url (format "https://%s/%s" (car (assoc host erica-package-host-alist)) repo))
-         (interned-name (when name (intern name)))
-         (package-name (or interned-name (intern (file-name-base repo)))))
-    (unless (package-installed-p package-name)
-      (package-vc-install url interned-name rev backend))))
-
-
-;;; End of File
