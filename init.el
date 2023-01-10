@@ -181,15 +181,21 @@
 (setq help-window-keep-selected t)
 
 (use-package eldoc
-  :ensure nil
+  :straight nil
   :diminish)
 
 ;; flymake
+
+(use-package flymake
+  :straight nil
+  :custom
+  (flymake-mode-line-lighter ""))
 
 (use-package popon ; dependency of flymake-popon
   :straight (popon :type git :host codeberg :repo "akib/emacs-popon"))
 
 (use-package flymake-popon
+  :diminish
   :straight 
   (flymake-popon :type git :host codeberg :repo "akib/emacs-flymake-popon")
   :custom
@@ -312,6 +318,7 @@
   :hook ((c-ts-mode c++-ts-mode) . eglot-ensure))
 
 (use-package eldoc-box
+  :diminish eldoc-box-hover-mode
   :hook (eglot-managed-mode . eldoc-box-hover-mode))
 
 
