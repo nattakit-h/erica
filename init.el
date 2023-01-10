@@ -300,6 +300,7 @@
 
 (use-package eglot
   :straight nil
+  :mode ("\\.h\\'" . c-ts-mode)
   :custom
   (eglot-autoshutdown t)
   (eglot-send-changes-idle-time 0.25)
@@ -309,6 +310,9 @@
     (add-to-list 'eglot-server-programs
                  `((c-ts-mode c++-ts-mode) . ("ccls" "--init" ,(json-serialize ccls-args)))))
   :hook ((c-ts-mode c++-ts-mode) . eglot-ensure))
+
+(use-package eldoc-box
+  :hook (eglot-managed-mode . eldoc-box-hover-mode))
 
 
 ;;; Tools
