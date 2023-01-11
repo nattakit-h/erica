@@ -125,9 +125,9 @@
   (whitespace-line-column 120)
   (whitespace-style '(face trailing tabs spaces line tab-mark))
   (whitespace-display-mappings
-      '((tab-mark ?\t [?\▷ ?\t])
-        (space-mark ?\s [?\·])
-        (space-mark ?\xA0 [?\␣])))
+   '((tab-mark ?\t [?\▷ ?\t])
+     (space-mark ?\s [?\·])
+     (space-mark ?\xA0 [?\␣])))
   :config
   (defun erica-setup-whitespace-faces ()
     (modus-themes-with-colors
@@ -210,13 +210,13 @@
   (defun erica-hl-todo-faces ()
     (setq hl-todo-highlight-punctuation ":")
     (setq hl-todo-keyword-faces
-     '(("NOTE" . "#0275c2")
-       ("INFO" . "#0275c2")
-       ("TODO" warning bold)
-       ("FIXME" warning bold)
-       ("HACK" error bold)
-       ("BUG" error bold)
-       ("XXX" error bold))))
+          '(("NOTE" . "#0275c2")
+            ("INFO" . "#0275c2")
+            ("TODO" warning bold)
+            ("FIXME" warning bold)
+            ("HACK" error bold)
+            ("BUG" error bold)
+            ("XXX" error bold))))
   (erica-hl-todo-faces)
   :hook ((modus-themes-after-load-theme . erica-hl-todo-faces)
          (after-init . global-hl-todo-mode)))
