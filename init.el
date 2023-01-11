@@ -310,6 +310,11 @@
       (clang-format-buffer)))
   :hook ((c-ts-base-mode . (lambda () (add-hook 'before-save-hook #'erica-clang-format nil t)))))
 
+(use-package zzz-to-char
+  (zzz-to-char-reach 2000)
+  :bind
+  ([remap zap-to-char] . zzz-to-char))
+
 ;; TODO: add lispy
 
 
