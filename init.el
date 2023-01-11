@@ -221,11 +221,15 @@
   :hook ((modus-themes-after-load-theme . erica-hl-todo-faces)
          (after-init . global-hl-todo-mode)))
 
-;; visual regexp
+;; regexp
 
-(use-package visual-regexp
+(use-package anzu
+  :diminish
+  :config
+  (global-anzu-mode 1)
   :bind
-  (("C-M-%" . vr/query-replace)))
+  (([remap query-replace] . anzu-query-replace)
+   ([remap query-replace-regexp] . anzu-query-replace-regexp)))
 
 ;; compilation
 
@@ -238,6 +242,21 @@
   (advice-add 'recompile :after (lambda (&rest _) (call-interactively 'other-window)))
   :hook compilation-mode
   :bind ("C-c C-c" . recompile))
+
+;; spelling
+
+(use-package ace-popup-menu
+  ;; TODO: integrate with fly-spell
+  :custom
+  (ace-popup-menu-show-pane-header t)
+  :config
+  (ace-popup-menu-mode))
+
+;; search
+
+(use-package ctrlf
+  :config
+  (ctrlf-mode 1))
 
 
 ;;; Keybinding
