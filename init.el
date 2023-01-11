@@ -303,14 +303,13 @@
   :bind (("<C-henkan>" . avy-goto-line)
          ("<henkan>" . avy-goto-char-timer)))
 
-(use-package clang-format
+(use-package apheleia
+  :diminish
   :config
-  (defun erica-clang-format ()
-    (when (file-exists-p (expand-file-name ".clang-format" (project-root (project-current))))
-      (clang-format-buffer)))
-  :hook ((c-ts-base-mode . (lambda () (add-hook 'before-save-hook #'erica-clang-format nil t)))))
+  (apheleia-global-mode 1))
 
 (use-package zzz-to-char
+  :custom
   (zzz-to-char-reach 2000)
   :bind
   ([remap zap-to-char] . zzz-to-char))
