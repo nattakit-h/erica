@@ -314,7 +314,7 @@
   :bind
   ([remap zap-to-char] . zzz-to-char))
 
-;; TODO: add lispy
+(require 'erica-lispy)
 
 
 ;;; Major modes
