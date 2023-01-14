@@ -319,6 +319,7 @@
   :bind
   ([remap zap-to-char] . zzz-to-char))
 
+(require 'erica-input)
 (require 'erica-lispy)
 
 
@@ -379,8 +380,6 @@
 
 ;; TODO: add nov.el
 ;; TODO: add bookmark+
-;; TODO: reimplemnet custom input method
-
 (require 'erica-shell)
 
 
