@@ -196,7 +196,7 @@
 
 (use-package flymake-popon
   :diminish
-  :straight 
+  :straight
   (flymake-popon :type git :host codeberg :repo "akib/emacs-flymake-popon")
   :custom
   ;; NOTE: remove default argument which will cause an error because it is a nil indentifier
