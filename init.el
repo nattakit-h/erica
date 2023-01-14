@@ -258,6 +258,10 @@
   :config
   (ctrlf-mode 1))
 
+;; tabs
+
+(setq tab-bar-show 1) ; only show tab bar when at least 1 tab exist.
+
 
 ;;; Keybinding
 
