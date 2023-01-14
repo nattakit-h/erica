@@ -266,6 +266,7 @@
 ;;; Keybinding
 
 (setq use-short-answers t)
+(setq confirm-kill-processes nil)
 (keymap-global-set "<f12>" #'restart-emacs)
 (keymap-global-set "C-z" #'ignore)
 (keymap-global-set "C-x C-z" #'ignore)
