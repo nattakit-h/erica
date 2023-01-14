@@ -376,7 +376,9 @@
   :bind (:map pdf-view-mode-map
               ("o" . pdf-outline)))
 
+;; TODO: add nov.el
 ;; TODO: add bookmark+
+;; TODO: reimplemnet custom input method
 
 (require 'erica-shell)
 
