@@ -259,13 +259,31 @@
 ;; compilation
 
 (use-package fancy-compilation
+  :defines (compilation-directory)
+  :functions (recompile
+              project-root
+              erica-compile-setup)
   :custom
   (fancy-compilation-override-colors nil)
   (compile-command (format "%s%s%s" "make -j" (+ 1 (num-processors)) " --no-print-directory -Cbuild"))
   :config
-  (advice-add 'compile :after (lambda (&rest _) (balance-windows) (other-window 1)))
+
+  (defun erica-compile-setup (&rest _)
+    "Set `compilation-directory' to `project-root' if it's value is nil"
+    (unless compilation-directory
+      (setq-local compilation-directory (project-root (project-current)))))
+
+  (defun erica-compile-project ()
+    "Use `recompile' instead because we can set `compilation-directory' here."
+    (interactive)
+    (recompile t))
+
+  (advice-add 'recompile :before #'erica-compile-setup)
   (advice-add 'recompile :after (lambda (&rest _) (balance-windows) (other-window 1)))
-  :bind ("C-c C-c" . recompile)
+
+  :bind (("C-c c"   . erica-compile-project)
+         ("C-c C-c" . recompile))
+
   :hook ((compilation-mode . fancy-compilation-mode)
          (fancy-compilation-setup . (lambda () (setq-local compilation-scroll-output 'first-error)))))
 
