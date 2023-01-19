@@ -215,14 +215,14 @@
   :hook ((emacs-lisp-mode flymake)))
 
 (use-package popon ; dependency of flymake-popon
+  ;; HACK: prevert straight.el from pulling `popone.el' from non existing emacsmirror repo
   :straight (popon :type git :host codeberg :repo "akib/emacs-popon"))
 
 (use-package flymake-popon
   :diminish
-  :straight
-  (flymake-popon :type git :host codeberg :repo "akib/emacs-flymake-popon")
+  :straight (flymake-popon :type git :host codeberg :repo "akib/emacs-flymake-popon")
   :custom
-  ;; NOTE: remove default argument which will cause an error because it is a nil indentifier
+  ;; HACK: remove default argument which will cause an error because it is a nil indentifier
   (flymake-popon-posframe-extra-arguments '())
   :config
   (defalias 'flymake-eldoc-function #'ignore)
