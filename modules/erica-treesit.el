@@ -1,20 +1,29 @@
-;;; GNU Emacs Configuration File -*- lexical-binding: t; -*-
-;;
+;;; erica-treesit.el --- Installer for tree-sitter libraries -*- lexical-binding: t; -*-
+
 ;; Copyright (C) 2023 Nattakit Hosapsin <nattakit@hosapsin.com>
-;;
-;; This program is free software; you can redistribute it and/or modify
+
+;; Author: Nattakit Hosapsin <nattakit@hosapsin.com>
+;; Maintainer: Nattakit Hosapsin <nattakit@hosapsin.com>
+;; URL: https://github.com/nattakit-h/erica
+
+;; This file is not part of GNU Emacs.
+
+;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 
-;; This program is distributed in the hope that it will be useful,
+;; This file is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+;; along with this file.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;;; Code:
 
 (use-package treesit
   :straight nil
@@ -52,9 +61,8 @@
           (csharp-mode . csharp-ts-mode)))
   (setq treesit-extra-load-path (list (expand-file-name "treesit" erica-data-directory)))
   :config
-
   (defun erica-treesit-install-all-languages ()
-    "Install all languages specified by `treesit-language-source-alist'."
+    "Install all languages specified in `treesit-language-source-alist'."
     (interactive)
     (let ((languages (mapcar 'car treesit-language-source-alist)))
       (dolist (lang languages)
@@ -68,5 +76,6 @@
      (apply old-function (car treesit-extra-load-path) arguments))))
 
 (provide 'erica-treesit)
-
-;;; End of File
+
+;;; erica-treesit.el ends here
+

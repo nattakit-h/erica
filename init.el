@@ -1,22 +1,35 @@
-;;; GNU Emacs Configuration File -*- lexical-binding: t; -*-
-;;
-;; Copyright (C) 2021-2023 Nattakit Hosapsin <nattakit@hosapsin.com>
-;;
-;; This program is free software; you can redistribute it and/or modify
+;;; init.el --- GNU Emacs configuration file -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2023 Nattakit Hosapsin <nattakit@hosapsin.com>
+
+;; Author: Nattakit Hosapsin <nattakit@hosapsin.com>
+;; Maintainer: Nattakit Hosapsin <nattakit@hosapsin.com>
+;; URL: https://github.com/nattakit-h/erica
+
+;; This file is not part of GNU Emacs.
+
+;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 
-;; This program is distributed in the hope that it will be useful,
+;; This file is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this file.  If not, see <http://www.gnu.org/licenses/>.
 
-
+;;; Commentary:
+
+;;; Code:
+
 ;;; Config
+
+;; forward declaration to silence warnings
+(defvar erica-data-directory)
+(defvar erica-config-directory)
 
 (defvar erica-font-mono (font-spec :name "Iberis Mono"))
 (defvar erica-font-sans (font-spec :name "Iberis Sans"))
@@ -28,15 +41,14 @@
 (defvar erica-font-chinese  (font-spec :name "Source Han Sans CN" :weight 'medium))
 (defvar erica-font-korean  (font-spec :name "Source Han Sans KR" :weight 'medium))
 
-
 ;;; System
 
 ;; package manager
 
 (setq package-enable-at-startup nil)
-(setq straight-use-package-by-default t)
-(setq straight-base-dir erica-data-directory)
-(setq straight-check-for-modifications '(check-on-save find-when-checking))
+(defvar straight-use-package-by-default t)
+(defvar straight-base-dir erica-data-directory)
+(defvar straight-check-for-modifications '(check-on-save find-when-checking))
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -53,7 +65,7 @@
 
 ;; disabled functions
 
-(mapcar
+(mapc
  (lambda (name) (put name 'disabled nil))
  '(upcase-region
    downcase-region
@@ -67,21 +79,26 @@
 
 (use-package no-littering
   :init
-  (setq no-littering-var-directory erica-data-directory)
-  (setq no-littering-etc-directory erica-config-directory)
+  (defvar no-littering-var-directory erica-data-directory)
+  (defvar no-littering-etc-directory erica-config-directory))
+
+(use-package recentf
+  :straight nil
+  :defer t
   :config
-  (with-eval-after-load 'recentf
-    (add-to-list 'recentf-exclude no-littering-var-directory)
-    (add-to-list 'recentf-exclude no-littering-etc-directory)))
+  (add-to-list 'recentf-exclude no-littering-var-directory)
+  (add-to-list 'recentf-exclude no-littering-etc-directory))
 
 
 ;;; Appearance
 
 (defun erica-prog-mode-setup ()
+  "Display line number and truncate long line in `prog-mode'."
   (let ((inhibit-message t)
         (message-log-max nil))
     (display-line-numbers-mode)
     (toggle-truncate-lines)))
+(add-hook 'prog-mode-hook #'erica-prog-mode-setup)
 
 ;; fonts
 
@@ -117,6 +134,7 @@
   (load-theme 'modus-operandi t))
 
 (use-package marginalia
+  :functions (marginalia-mode)
   :config
   (marginalia-mode))
 
@@ -193,7 +211,8 @@
 (use-package flymake
   :straight nil
   :custom
-  (flymake-mode-line-lighter ""))
+  (flymake-mode-line-lighter "")
+  :hook ((emacs-lisp-mode flymake)))
 
 (use-package popon ; dependency of flymake-popon
   :straight (popon :type git :host codeberg :repo "akib/emacs-popon"))
@@ -210,6 +229,7 @@
   :hook flymake-mode)
 
 (use-package hl-todo
+  :defines (hl-todo-highlight-punctuation hl-todo-keyword-faces)
   :config
   (defun erica-hl-todo-faces ()
     (setq hl-todo-highlight-punctuation ":")
@@ -228,6 +248,7 @@
 ;; regexp
 
 (use-package anzu
+  :functions (global-anzu-mode)
   :diminish
   :config
   (global-anzu-mode 1)
@@ -242,18 +263,16 @@
   (fancy-compilation-override-colors nil)
   (compile-command (format "%s%s%s" "make -j" (+ 1 (num-processors)) " --no-print-directory -Cbuild"))
   :config
-  (advice-add 'compile :after (lambda (&rest _) (call-interactively 'other-window)))
-  (advice-add 'recompile :after (lambda (&rest _) (call-interactively 'other-window)))
-  ;; We can't use compilation-mode-hook here because this package reset
-  ;; some local variables every time compilation-start has been called.
-  ;; This won't be a problem normally but it can cause some conflicts
-  ;; in ripgrep buffers.
-  (compilation-mode 1)
-  :bind ("C-c C-c" . recompile))
+  (advice-add 'compile :after (lambda (&rest _) (balance-windows) (other-window 1)))
+  (advice-add 'recompile :after (lambda (&rest _) (balance-windows) (other-window 1)))
+  :bind ("C-c C-c" . recompile)
+  :hook ((compilation-mode . fancy-compilation-mode)
+         (fancy-compilation-setup . (lambda () (setq-local compilation-scroll-output 'first-error)))))
 
 ;; spelling
 
 (use-package ace-popup-menu
+  :functions (ace-popup-menu-mode)
   ;; TODO: integrate with fly-spell
   :custom
   (ace-popup-menu-show-pane-header t)
@@ -263,6 +282,7 @@
 ;; search
 
 (use-package ctrlf
+  :functions (ctrlf-mode)
   :config
   (ctrlf-mode 1))
 
@@ -278,35 +298,38 @@
 (keymap-global-set "<f12>" #'restart-emacs)
 (keymap-global-set "C-z" #'ignore)
 (keymap-global-set "C-x C-z" #'ignore)
+(keymap-global-set "C-x C-b" #'ibuffer)
 
 ;; window
 
 (windmove-mode 1)
 (windmove-default-keybindings 'meta)
 
-(advice-add 'split-window-below :after (lambda (&rest _) (call-interactively 'other-window)))
-(advice-add 'split-window-right :after (lambda (&rest _) (call-interactively 'other-window)))
+(advice-add 'split-window-below :after (lambda (&rest _) (balance-windows) (other-window 1)))
+(advice-add 'split-window-right :after (lambda (&rest _) (balance-windows) (other-window 1)))
 
 
 ;;; Editing
 
-(electric-pair-mode 1)
 (delete-selection-mode 1)
+
 (c-add-style "c" '("bsd" (c-basic-offset . 4)))
 
 (setq-default tab-width 4)
 (setq-default fill-column 100)
 (setq-default indent-tabs-mode nil)
 
-(setq js-indent-level 2)
-(setq css-indent-offset 2)
-(setq c-ts-mode-indent-offset 4)
-(setq c-ts-mode-indent-style 'bsd)
-(setq c-default-style '((java-mode . "java") (awk-mode . "awk") (other . "c")))
 (setq kill-do-not-save-duplicates t) ; don’t add a string to kill-ring if it duplicates the last one.
 
+(use-package electric
+  :straight nil
+  :config
+  (electric-pair-mode 1)
+  (add-to-list 'electric-pair-pairs '(?\{ . ?\})))
+
 (use-package hungry-delete
-  :diminish hungry-delete-mode
+  :diminish
+  :functions (global-hungry-delete-mode)
   :custom
   (hungry-delete-chars-to-skip " \t")
   :config
@@ -318,6 +341,7 @@
 
 (use-package apheleia
   :diminish
+  :functions (apheleia-global-mode)
   :config
   (apheleia-global-mode 1))
 
@@ -327,13 +351,22 @@
   :bind
   ([remap zap-to-char] . zzz-to-char))
 
-(require 'erica-input)
-(require 'erica-lispy)
+(use-package erica-input
+  :straight nil
+  :config
+  (defun erica-input-setup ()
+    (set-language-environment "UTF-8")
+    (activate-input-method "erica"))
+  :hook (prog-mode . erica-input-setup))
+
+(use-package erica-lispy
+  :straight nil)
 
 
 ;;; Major modes
 
-(require 'erica-treesit)
+(use-package erica-treesit
+  :straight nil)
 
 (use-package geiser)
 (use-package geiser-chez)
@@ -349,7 +382,8 @@
   (eglot-send-changes-idle-time 0.25)
   :config
   (let ((ccls-args '((cache . (directory "/tmp/ccls-cache"))
-                     (compilationDatabaseDirectory . "build"))))
+                     (compilationDatabaseDirectory . "build")
+                     (completion . (filterAndSort :false)))))
     (add-to-list 'eglot-server-programs
                  `((c-ts-mode c++-ts-mode) . ("ccls" "--init" ,(json-serialize ccls-args)))))
   :hook ((c-ts-mode c++-ts-mode) . eglot-ensure))
@@ -364,16 +398,23 @@
 ;; vc
 
 (setq vc-follow-symlinks t)
-(setq project-vc-merge-submodules nil)
 
-;; dired
+(use-package project
+  :straight nil
+  :custom
+  (project-vc-merge-submodules nil))
 
-(setq dired-listing-switches "-laGh1v --group-directories-first --time-style=long-iso")
-(setq dired-kill-when-opening-new-dired-buffer t)
+(use-package dired
+  :straight nil
+  :custom
+  (dired-listing-switches "-laGh1v --group-directories-first --time-style=long-iso")
+  (dired-kill-when-opening-new-dired-buffer t))
 
 ;; ripgrep and wgrep
 
 (use-package rg
+  ;; TODO: find a better replacement of wgrep
+  :disabled
   :custom
   (rg-show-header nil)
   (wgrep-auto-save-buffer t)
@@ -429,6 +470,7 @@
 
 (use-package pdf-tools
   :mode ("\\.pdf\\'" . pdf-view-mode)
+  :defines (pdf-view-mode-map)
   :bind (:map pdf-view-mode-map
               ("o" . pdf-outline)))
 
@@ -439,8 +481,12 @@
   :disabled)
 
 ;; TODO: add nov.el
+;; TODO: add org-roam
 ;; TODO: add bookmark+
-(require 'erica-shell)
+(use-package erica-shell
+  :straight nil)
 
-
-;;; End of File
+(provide 'init)
+
+;;; init.el ends here
+

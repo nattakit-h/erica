@@ -1,33 +1,36 @@
-;;; GNU Emacs Configuration File -*- lexical-binding: t; -*-
-;;
+;;; erica-input.el --- Input method for unicode characters -*- lexical-binding: t; -*-
+
 ;; Copyright (C) 2023 Nattakit Hosapsin <nattakit@hosapsin.com>
-;;
-;; This program is free software; you can redistribute it and/or modify
+
+;; Author: Nattakit Hosapsin <nattakit@hosapsin.com>
+;; Maintainer: Nattakit Hosapsin <nattakit@hosapsin.com>
+;; URL: https://github.com/nattakit-h/erica
+
+;; This file is not part of GNU Emacs.
+
+;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 
-;; This program is distributed in the hope that it will be useful,
+;; This file is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this file.  If not, see <http://www.gnu.org/licenses/>.
 
-
-;;; Language environment
+;;; Commentary:
 
-(set-language-environment "UTF-8")
-
-;; input method
+;;; Code:
 
 (quail-define-package
  "erica" ; NAME
  "UTF-8" ; LANGUAGE
- "Λ"   ; TITLE
+ "Λ"     ; TITLE
  t       ; GUIDANCE
- "Unicode characters input method for scheme programming." ; DOCSTRING
+ "Input method for unicode characters." ; DOCSTRING
  nil     ; TRANSLATION-KEY
  t       ; FORGET-LAST-SELECTION
  nil     ; DETERMINISTIC
@@ -131,8 +134,8 @@
 
  ("\\\\" ?\\))  ; REVERSE SOLIDUS
 
-(activate-input-method "erica")
 
 (provide 'erica-input)
-
-;;; End of File
+
+;;; erica-input.el ends here
+
