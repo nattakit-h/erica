@@ -126,10 +126,6 @@
      (underline-link-visited unspecified)
      (underline-link-symbolic unspecified)))
   :config
-  ;; TODO: remap the following faces
-  ;; modus-themes-lang-error
-  ;; modus-themes-lang-note
-  ;; modus-themes-lang-warning
   (load-theme 'modus-operandi t))
 
 (use-package marginalia
@@ -210,8 +206,14 @@
 
 (use-package flymake
   :straight nil
+  :after (modus-themes)
   :custom
   (flymake-mode-line-lighter "")
+  :config
+  (modus-themes-with-colors
+    (set-face-attribute 'flymake-note nil :underline nil  :foreground fg-added :background bg-added)
+    (set-face-attribute 'flymake-warning nil :underline nil :foreground fg-changed :background bg-changed)
+    (set-face-attribute 'flymake-error nil :underline nil  :foreground fg-removed :background bg-removed))
   :hook ((emacs-lisp-mode flymake)))
 
 (use-package popon ; dependency of flymake-popon
@@ -229,18 +231,28 @@
   :hook flymake-mode)
 
 (use-package hl-todo
-  :defines (hl-todo-highlight-punctuation hl-todo-keyword-faces)
+  :after (modus-themes)
+  :defines (hl-todo-highlight-punctuation
+            hl-todo-keyword-faces
+            ;; defined inside `modus-themes-with-colors'
+            cyan-faint
+            bg-cyan-nuanced
+            yellow-faint
+            bg-yellow-nuanced
+            red-faint
+            bg-red-nuanced)
+  :functions (modus-themes-with-colors)
   :config
   (defun erica-hl-todo-faces ()
     (setq hl-todo-highlight-punctuation ":")
-    (setq hl-todo-keyword-faces
-          '(("NOTE" . "#0275c2")
-            ("INFO" . "#0275c2")
-            ("TODO" warning bold)
-            ("FIXME" warning bold)
-            ("HACK" error bold)
-            ("BUG" error bold)
-            ("XXX" error bold))))
+    (modus-themes-with-colors
+      (setq hl-todo-keyword-faces
+            `(("NOTE" ((t (:weight bold :foreground ,cyan-faint :background ,bg-cyan-nuanced))))
+              ("TODO" ((t (:weight bold :foreground ,yellow-faint :background ,bg-yellow-nuanced))))
+              ("FIXME" ((t (:weight bold :foreground ,yellow-faint :background ,bg-yellow-nuanced))))
+              ("BUG" ((t (:weight bold :foreground ,red-faint :background ,bg-red-nuanced))))
+              ("HACK" ((t (:weight bold :foreground ,red-faint :background ,bg-red-nuanced))))
+              ("XXX" ((t (:weight bold :foreground ,red-faint :background ,bg-red-nuanced))))))))
   (erica-hl-todo-faces)
   :hook ((modus-themes-after-load-theme . erica-hl-todo-faces)
          (after-init . global-hl-todo-mode)))
