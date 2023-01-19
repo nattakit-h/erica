@@ -273,8 +273,9 @@
 ;; spelling
 
 (use-package ace-popup-menu
+  ;; TODO: currently unused, to be integrated with fly-spell
+  :disabled
   :functions (ace-popup-menu-mode)
-  ;; TODO: integrate with fly-spell
   :custom
   (ace-popup-menu-show-pane-header t)
   :config
