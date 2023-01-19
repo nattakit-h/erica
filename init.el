@@ -25,10 +25,9 @@
 
 ;;; Code:
 
-;;; Config
+;;; Constants
 
-;; forward declaration to silence warnings
-(defvar erica-data-directory)
+(defvar erica-data-directory) ; forward declaration to silence byte-compiled warnings
 (defvar erica-config-directory)
 
 (defvar erica-font-mono (font-spec :name "Iberis Mono"))
@@ -182,7 +181,7 @@
   ( :map corfu-map
     ("C-d" . corfu-info-documentation)
     ("C-l" . corfu-info-location))
-  ;; NOTE: global-corfu-mode do not work with eglot
+  ;; NOTE: global-corfu-mode doesn't seem to be working when eglot activated
   :hook (prog-mode . corfu-mode))
 
 (use-package orderless
@@ -482,11 +481,17 @@
 (use-package mentor
   :disabled)
 
-;; TODO: add nov.el
-;; TODO: add org-roam
-;; TODO: add bookmark+
 (use-package erica-shell
   :straight nil)
+
+;; TODO: epub reader: `nov.el'
+;; TODO: note taking: `org-roam.el'
+;; TODO: session management: `bookmark+.el'
+;; TODO: better C-v, M-v https://with-emacs.com/posts/ui-hacks/keep-scrollin-scrollin-scrollin
+;;       alternatively: `golden-ration-scroll-mmode.el'
+;; TODO: group buffers: `bufler.el'
+
+
 
 (provide 'init)
 
