@@ -428,6 +428,12 @@
   :bind (:map pdf-view-mode-map
               ("o" . pdf-outline)))
 
+;; bittorrent
+
+;; FIXME: move this package data directory to an appropriate place
+(use-package mentor
+  :disabled)
+
 ;; TODO: add nov.el
 ;; TODO: add bookmark+
 (require 'erica-shell)
