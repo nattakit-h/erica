@@ -77,7 +77,11 @@
 
 ;;; Appearance
 
-(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+(defun erica-prog-mode-setup ()
+  (let ((inhibit-message t)
+        (message-log-max nil))
+    (display-line-numbers-mode)
+    (toggle-truncate-lines)))
 
 ;; fonts
 
