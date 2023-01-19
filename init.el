@@ -142,6 +142,7 @@
 
 (use-package whitespace
   :straight nil
+  :after (modus-themes)
   :diminish
   :custom
   (whitespace-line-column 120)
