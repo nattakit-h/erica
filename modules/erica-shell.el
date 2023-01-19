@@ -29,6 +29,9 @@
 (defun eshell/em (file)
   (find-file file))
 
+(defun eshell/less (file)
+  (view-file file))
+
 (defun eshell/unpack (&optional file &rest args)
   ;; TODO: support listing files in the archive
   (if file
