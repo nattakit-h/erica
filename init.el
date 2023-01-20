@@ -257,6 +257,10 @@
   :hook ((modus-themes-after-load-theme . erica-hl-todo-faces)
          (after-init . global-hl-todo-mode)))
 
+(use-package rainbow-mode
+  :custom
+  (rainbow-x-colors nil))
+
 ;; regexp
 
 (use-package anzu
