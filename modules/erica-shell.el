@@ -40,7 +40,7 @@
 (erica-shell-defalias la "ls -A")
 (erica-shell-defalias ll "ls -lh")
 (erica-shell-defalias lla "ls -lhA")
-(erica-shell-defalias pls "sudo")
+(erica-shell-defalias pls "sudo") ; BUG: doesn't works with emerge
 
 (defun eshell/em (file)
   "Edit FILE in Emacs."

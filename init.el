@@ -487,10 +487,11 @@
 
 ;; TODO: epub reader: `nov.el'
 ;; TODO: note taking: `org-roam.el'
-;; TODO: session management: `bookmark+.el'
+;; TODO: session management: `bookmark+.el' and/or `perject.el'
 ;; TODO: better C-v, M-v https://with-emacs.com/posts/ui-hacks/keep-scrollin-scrollin-scrollin
 ;;       alternatively: `golden-ration-scroll-mmode.el'
 ;; TODO: group buffers: `bufler.el'
+;; TODO: spell checker: `flyspell' and `ace-popup-menu'
 
 
 
