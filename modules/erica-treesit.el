@@ -56,6 +56,7 @@
   (setq major-mode-remap-alist
         '((c-mode . c-ts-mode)
           (c++-mode . c++-ts-mode)
+          (c-or-c++-mode . c-or-c++-ts-mode)
           (python-mode . python-ts-mode)
           (java-mode . java-ts-mode)
           (csharp-mode . csharp-ts-mode)))
