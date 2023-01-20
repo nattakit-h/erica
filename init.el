@@ -426,7 +426,6 @@
 
 (use-package eglot
   :straight nil
-  :mode ("\\.h\\'" . c-ts-mode)
   :custom
   (eglot-autoshutdown t)
   (eglot-send-changes-idle-time 0.25)
