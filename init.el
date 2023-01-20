@@ -473,9 +473,12 @@
 (use-package pdf-tools
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :defines (pdf-view-mode-map)
-  :bind (:map pdf-view-mode-map
-              ("o" . pdf-outline)))
-
+  :custom
+  (pdf-outline-imenu-use-flat-menus t)
+  :hook ((pdf-view-mode . pdf-annot-minor-mode)
+         (pdf-annot-list-mode . pdf-annot-list-follow-minor-mode)
+          ;; browse document with "o" `pdf-outline' or "M-g i" `imenu'
+         (pdf-view-mode . pdf-outline-minor-mode)))
 
 (use-package erica-shell
   :straight nil)
