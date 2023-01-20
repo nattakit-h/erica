@@ -172,7 +172,7 @@
   :custom
   (corfu-auto t)
   (corfu-quit-at-boundary t)
-  (corfu-quit-no-match t)
+  (read-extended-command-predicate #'command-completion-default-include-p)
   :bind
   ( :map corfu-map
     ("C-d" . corfu-info-documentation)
