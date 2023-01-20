@@ -483,11 +483,6 @@
   :bind (:map pdf-view-mode-map
               ("o" . pdf-outline)))
 
-;; bittorrent
-
-;; FIXME: move this package data directory to an appropriate place
-(use-package mentor
-  :disabled)
 
 (use-package erica-shell
   :straight nil)
