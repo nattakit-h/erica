@@ -371,6 +371,8 @@
 
 (setq kill-do-not-save-duplicates t) ; don’t add a string to kill-ring if it duplicates the last one.
 
+(set-terminal-coding-system 'utf-8)
+
 (use-package electric
   :straight nil
   :config
