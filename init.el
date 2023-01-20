@@ -312,17 +312,6 @@
   :hook ((compilation-mode . fancy-compilation-mode)
          (fancy-compilation-setup . (lambda () (setq-local compilation-scroll-output 'first-error)))))
 
-;; spelling
-
-(use-package ace-popup-menu
-  ;; TODO: currently unused, to be integrated with fly-spell
-  :disabled
-  :functions (ace-popup-menu-mode)
-  :custom
-  (ace-popup-menu-show-pane-header t)
-  :config
-  (ace-popup-menu-mode))
-
 ;; search
 
 (use-package ctrlf
