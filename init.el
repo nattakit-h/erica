@@ -339,6 +339,12 @@
 (advice-add 'split-window-below :after (lambda (&rest _) (balance-windows) (other-window 1)))
 (advice-add 'split-window-right :after (lambda (&rest _) (balance-windows) (other-window 1)))
 
+(use-package erica-find-file
+  :straight nil
+  :custom
+  (large-file-warning-threshold 100000000) ; 100 MB
+  (find-file-suppress-same-file-warnings nil))
+
 
 ;;; Editing
 
