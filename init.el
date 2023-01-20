@@ -405,6 +405,10 @@
     (activate-input-method "erica"))
   :hook (prog-mode . erica-input-setup))
 
+(use-package abbrev
+  :straight nil
+  :diminish)
+
 (use-package erica-lispy
   :straight nil)
 
