@@ -441,54 +441,6 @@
   (dired-listing-switches "-laGh1v --group-directories-first --time-style=long-iso")
   (dired-kill-when-opening-new-dired-buffer t))
 
-;; ripgrep and wgrep
-
-(use-package rg
-  ;; TODO: find a better replacement of wgrep
-  :disabled
-  :custom
-  (rg-show-header nil)
-  (wgrep-auto-save-buffer t)
-  :config
-  (defun erica-rg-pop-to-buffer (&optional _ _)
-    "Switch to rg BUFFER. and select the first result"
-    (interactive)
-    (with-current-buffer (rg-buffer-name)
-      (when (string= mode-name "rg")
-        (pop-to-buffer (current-buffer))
-        (goto-char (point-min))
-        (rg-next-file 1))))
-
-  ;; HACK: this is a workaround for a bug in rg-wgrep
-  (defun erica-rg-wgrep-fix-text-properties ()
-    "Remove readonly text properties in the last result line of the wgrep buffer"
-    (save-excursion
-      (let ((result-line-regexp (concat wgrep-rg-grouped-result-file-regexp
-                                        "\\|"
-                                        wgrep-rg-ungrouped-result-regexp)))
-        ;; only remove text properties when there are results in the buffer.
-        (when (progn (goto-char (point-min)) (re-search-forward result-line-regexp nil t))
-          (let ((start-point (progn
-                               (goto-char (point-max))
-                               (forward-line -1)
-                               (beginning-of-line)
-                               (point)))
-                (end-point (progn (goto-char (point-max))
-                                  (re-search-backward "^rg finished .*$" nil t)
-                                  (point))))
-            (remove-text-properties start-point end-point '(read-only t wgrep-footer t)))))))
-
-  (add-to-list 'compilation-finish-functions #'erica-rg-pop-to-buffer)
-  (advice-add 'wgrep-rg-prepare-header/footer :after #'erica-rg-wgrep-fix-text-properties)
-  :bind
-  (("C-x p g" . rg-project)
-   :map wgrep-mode-map ;; unmap unused key bindings
-   ("C-c C-e" . ignore)
-   ("C-x C-s" . ignore)
-   :map rg-mode-map
-   ("C-x C-q" . wgrep-change-to-wgrep-mode)
-   ("e" . ignore)))
-
 ;; git
 
 (use-package magit
