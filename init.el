@@ -369,6 +369,11 @@
 (setq-default fill-column 100)
 (setq-default indent-tabs-mode nil)
 
+(defvar js-indent-level 2)
+(defvar css-indent-offset 2)
+(defvar c-ts-mode-indent-offset 4)
+(defvar c-ts-mode-indent-style 'bsd)
+(defvar c-default-style '((java-mode . "java") (awk-mode . "awk") (other . "c")))
 (setq kill-do-not-save-duplicates t) ; don’t add a string to kill-ring if it duplicates the last one.
 
 (set-terminal-coding-system 'utf-8)
