@@ -373,8 +373,8 @@
   (global-hungry-delete-mode 1))
 
 (use-package avy
-  :bind (("<C-hiragana-katakana>" . avy-goto-line)
-         ("<hiragana-katakana>" . avy-goto-char-timer)))
+  :bind (("<C-muhenkan>" . avy-goto-line)
+         ("<muhenkan>" . avy-goto-char-timer)))
 
 (use-package apheleia
   :diminish
