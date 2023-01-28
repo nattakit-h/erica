@@ -313,6 +313,13 @@
   :config
   (ctrlf-mode 1))
 
+(use-package which-key
+  :functions (which-key-mode)
+  :config
+  (which-key-mode +1)
+  :bind
+  ("C-h K" . which-key-show-top-level)
+  ("C-h M" . which-key-show-major-mode))
 
 
 ;;; Keybinding
