@@ -471,6 +471,12 @@
           ;; browse document with "o" `pdf-outline' or "M-g i" `imenu'
          (pdf-view-mode . pdf-outline-minor-mode)))
 
+;; disassembler
+
+(use-package disaster
+  ;; TODO: better intergration
+  :defer t)
+
 ;; epub
 
 (use-package nov
