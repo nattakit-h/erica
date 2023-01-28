@@ -97,8 +97,8 @@
   "Display line number and truncate long line in `prog-mode'."
   (let ((inhibit-message t)
         (message-log-max nil))
-    (display-line-numbers-mode)
-    (toggle-truncate-lines)))
+    (display-line-numbers-mode +1)
+    (toggle-truncate-lines +1)))
 (add-hook 'prog-mode-hook #'erica-prog-mode-setup)
 
 ;; fonts
@@ -270,7 +270,7 @@
   :functions (global-anzu-mode)
   :diminish
   :config
-  (global-anzu-mode 1)
+  (global-anzu-mode +1)
   :bind
   (([remap query-replace] . anzu-query-replace)
    ([remap query-replace-regexp] . anzu-query-replace-regexp)))
@@ -305,7 +305,7 @@
 (use-package ctrlf
   :functions (ctrlf-mode)
   :config
-  (ctrlf-mode 1))
+  (ctrlf-mode +1))
 
 (use-package which-key
   :functions (which-key-mode)
@@ -327,7 +327,7 @@
 
 ;; window
 
-(windmove-mode 1)
+(windmove-mode +1)
 (windmove-default-keybindings 'meta)
 
 (advice-add 'split-window-below :after (lambda (&rest _) (balance-windows) (other-window 1)))
@@ -342,7 +342,7 @@
 
 ;;; Editing
 
-(delete-selection-mode 1)
+(delete-selection-mode +1)
 
 (c-add-style "c" '("bsd" (c-basic-offset . 4)))
 
@@ -362,7 +362,7 @@
 (use-package electric
   :straight nil
   :config
-  (electric-pair-mode 1)
+  (electric-pair-mode +1)
   (add-to-list 'electric-pair-pairs '(?\{ . ?\})))
 
 (use-package hungry-delete
@@ -371,7 +371,7 @@
   :custom
   (hungry-delete-chars-to-skip " \t")
   :config
-  (global-hungry-delete-mode 1))
+  (global-hungry-delete-mode +1))
 
 (use-package avy
   :bind (("<C-muhenkan>" . avy-goto-line)
@@ -381,7 +381,7 @@
   :diminish
   :functions (apheleia-global-mode)
   :config
-  (apheleia-global-mode 1))
+  (apheleia-global-mode +1))
 
 (use-package zzz-to-char
   :custom
