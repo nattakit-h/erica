@@ -185,15 +185,6 @@
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
-(use-package kind-icon
-  :after (corfu)
-  :defines (corfu-margin-formatters)
-  :functions (kind-icon-margin-formatter)
-  :custom
-  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
 ;; page-break
 
 (use-package page-break-lines
