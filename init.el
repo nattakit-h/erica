@@ -91,6 +91,8 @@
 
 ;;; Appearance
 
+(setq tab-bar-show 1) ; only show tab bar when at least 1 tab exist.
+
 (defun erica-prog-mode-setup ()
   "Display line number and truncate long line in `prog-mode'."
   (let ((inhibit-message t)
@@ -258,6 +260,7 @@
          (after-init . global-hl-todo-mode)))
 
 (use-package rainbow-mode
+  ;; TODO: add toggle interface
   :custom
   (rainbow-x-colors nil))
 
@@ -310,9 +313,6 @@
   :config
   (ctrlf-mode 1))
 
-;; tabs
-
-(setq tab-bar-show 1) ; only show tab bar when at least 1 tab exist.
 
 
 ;;; Keybinding
@@ -481,9 +481,6 @@
 ;; TODO: group buffers: `bufler.el'
 ;; TODO: spell checker: `flyspell' and `ace-popup-menu'
 
-
-
 (provide 'init)
 
 ;;; init.el ends here
-
