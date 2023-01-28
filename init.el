@@ -32,7 +32,7 @@
 
 (defvar erica-font-mono (font-spec :name "Iberis Mono"))
 (defvar erica-font-sans (font-spec :name "Iberis Sans"))
-(defvar erica-font-serif  (font-spec :name "Crimson Text"))
+(defvar erica-font-serif  (font-spec :name "Crimson Text" :height 1.2))
 (defvar erica-font-mono-serif (font-spec :name "Courier Prime" :weight 'medium))
 
 (defvar erica-font-thai  (font-spec :name "IBM Plex Sans Thai Looped" :weight 'medium))
@@ -471,10 +471,32 @@
           ;; browse document with "o" `pdf-outline' or "M-g i" `imenu'
          (pdf-view-mode . pdf-outline-minor-mode)))
 
+;; epub
+
+(use-package nov
+  ;; TODO: enhance rendering with nov-xwidget
+  :mode ("\\.epub\\'" . nov-mode)
+  :custom
+  (nov-text-width 120)
+  (nov-text-width t)
+  :hook
+  ((nov-mode . (lambda ()
+                 (setq-local buffer-display-table (make-display-table))
+                 (aset buffer-display-table ?\^M [])))
+   (nov-post-html-render . (lambda () (let ((inhibit-message t)) (toggle-truncate-lines -1))))))
+
+(use-package visual-fill-column
+  :after (nov)
+  :custom
+  (visual-fill-column-center-text t)
+  :hook ((nov-mode . visual-line-mode)
+         (nov-mode . visual-fill-column-mode)))
+
+;; shell
+
 (use-package erica-shell
   :straight nil)
 
-;; TODO: epub reader: `nov.el'
 ;; TODO: note taking: `org-roam.el'
 ;; TODO: session management: `bookmark+.el' and/or `perject.el'
 ;; TODO: better C-v, M-v https://with-emacs.com/posts/ui-hacks/keep-scrollin-scrollin-scrollin
