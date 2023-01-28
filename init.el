@@ -497,6 +497,14 @@
 (use-package erica-shell
   :straight nil)
 
+;; utilities
+
+(defun erica-pp-pop (expr)
+  "Pretty print EXPR then pop result buffer."
+  (with-output-to-temp-buffer "*erica-pp*"
+    (pp expr))
+  (pop-to-buffer "*erica-pp*"))
+
 ;; TODO: note taking: `org-roam.el'
 ;; TODO: session management: `bookmark+.el' and/or `perject.el'
 ;; TODO: better C-v, M-v https://with-emacs.com/posts/ui-hacks/keep-scrollin-scrollin-scrollin
