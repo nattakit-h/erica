@@ -283,9 +283,17 @@
   (compilation-environment '("TERM=eterm-color"))
   :config
   (require 'ansi-color)
-
   (setq-default compilation-scroll-output 'first-error)
-  (setq-default compile-command (format "%s%s%s" "make -j" (+ 1 (num-processors)) " --no-print-directory -Cbuild"))
+  (setq-default compile-command
+                (let ((bear-cmd '("bear"
+                                  "--output build/compile_commands.json"
+                                  "--append"))
+                      (make-cmd `("make"
+                                  ,(concat "-j" (number-to-string (1+ (num-processors))))
+                                  "--no-print-directory"
+                                  "-Cbuild"
+                                  "check")))
+                  (concat (string-join bear-cmd " ") " -- " (string-join make-cmd " "))))
 
   (advice-add 'compile :after (lambda (&rest _) (balance-windows) (other-window 1)))
   (advice-add 'recompile :after (lambda (&rest _) (balance-windows) (other-window 1)))
@@ -473,9 +481,12 @@
 
 ;; disassembler
 
-(use-package disaster
-  ;; TODO: better intergration
-  :defer t)
+(use-package erica-disassemble
+  :straight nil
+  :after (:any c-mode c-ts-mode)
+  :custom
+  (erica-disassemble-find-database-function (lambda () "build/compile_commands.json"))
+  :hook (((c-mode c-ts-mode) . (lambda () (keymap-local-set "C-c d" #'erica-disassemble-line)))))
 
 ;; epub
 
